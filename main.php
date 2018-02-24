@@ -231,22 +231,22 @@ include 'dbconnection.php';
                 <div class="form-row">
                   <div class="col-sm-5 offset-sm-2">
                     <label for="docTitle">Document title</label>
-                    <input type="text" class="form-control" id="docTitle" placeholder="Enter a tittle of the translated document here" name="docTitle" >
+                    <input type="text" class="form-control written" id="docTitle" placeholder="Enter a tittle of the translated document here" name="docTitle" >
                   </div>
                   <div class="col-sm-3">
                     <label for="symbols">Symbols</label>
-                    <input type="number" class="form-control" id="symbols" name="symbols" placeholder="Enter number of characters" >
+                    <input type="number" class="form-control written" id="symbols" name="symbols" placeholder="Enter number of characters" >
                   </div>
                 </div>                                          
                        
                 <div class="form-row">
                   <div class="col-sm-3 offset-sm-3">
                     <label for="dateStarted">Date started</label>
-                    <input type="date" class="form-control" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01">
+                    <input type="date" class="form-control written" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01">
                   </div>
                   <div class="col-sm-3">
                     <label for="dateFinished">Date finished</label>
-                    <input type="date" class="form-control" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01">
+                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01">
                   </div>
                 </div>
 
@@ -259,23 +259,23 @@ include 'dbconnection.php';
                 <div class="form-row">
                    <div class="col-sm-8 offset-sm-2">
                         <label for="eventName">Event description</label>
-                        <input type="text" class="form-control" id="eventName" placeholder="For example: Weekly Progress Meeting etc." name="eventName">
+                        <input type="text" class="form-control verbal" id="eventName" placeholder="For example: Weekly Progress Meeting etc." name="eventName">
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="col-sm-3 offset-sm-2">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control" id="dateStartedVerbal" name="date" >
+                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date" >
                     </div>
 
                     <div class="col-sm-3">
                         <label for="time">Time started<span class="small text-muted"> (eg. 08:30, 17:00...)</span></label>
-                        <input type="time" class="form-control" id="time" name="time" data-toggle="tooltip" data-placement="top" title="You can enter time just like 0830, 1700 without :">
+                        <input type="time" class="form-control verbal" id="time" name="time" data-toggle="tooltip" data-placement="top" title="You can enter time just like 0830, 1700 without :">
                     </div>
                     <div class="col-sm-2">
                         <label for="duration">Duration</label>
-                        <input type="number" class="form-control" id="duration" name="duration" placeholder="Enter duration in minutes" >    
+                        <input type="number" class="form-control verbal" id="duration" name="duration" placeholder="Enter duration in minutes" >    
                     </div>
                 </div>
                 
@@ -377,6 +377,7 @@ if ($result2->num_rows > 0) {
     <script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
     
     <script>
+	$(".section").hide();
 //starting jquery code for textbox
     $(document).ready(function(){
 //action on inputing text into customerName textbox
