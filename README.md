@@ -8,6 +8,7 @@ List of further improvements:
 - [ ] Make "5 champions" + "others" (collectively) in each section of the Excel report file
 - [ ] Clean-up all comments
 - [ ] Replace "delete a user" function with "edit a user" including "delete a user" button inside
+- [ ] Prompt to change password after first sign in
 - [ ] Custom report generation
 - [ ] Disable making records for past week after Saturday
 - [ ] Refresh Manager + Main page content (work done table) after Sunday
