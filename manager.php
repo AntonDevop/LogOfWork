@@ -279,7 +279,51 @@ if($resultDeptSum->num_rows > 0) {
 
     $sqlImport = "SELECT * FROM `temporary` ORDER BY total DESC";
     $resultImport = $database->query($sqlImport);
+            
+//fetching all rows from temporary table into associated array            
+    $dataArray = [];
+    while ($row = $resultImport->fetch_assoc()) {
+    $dataArray[] = $row;
+    }
+//fetching all rows from temporary table into associated array
     
+//inserting 3 champions             
+    if($resultImport->num_rows > 0) {
+    $i = 0;
+    while($i < 3) {
+        $selector = $dataArray[$i]["selector"];
+        $total = $dataArray[$i]["total"];
+        $pageshours = $dataArray[$i]["pageshours"];
+        $percent = $dataArray[$i]["percent"];
+        
+        $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department)
+                          VALUES ('".$selector."', '".$total."', '".$pageshours."', '".$percent."', '".$percent."')";
+            $result = $database->query($sqlInsert);
+        
+        $i++;
+    }
+        print_r($dataArray[$i]["selector"]);
+    }
+//inserting 3 champions 
+            
+    $recordsNo = count($dataArray);     //length of array from temp table
+            
+    $selectorOthers = "Others";
+//counters for others            
+    $totalOthers = 0;
+    $pageshoursOthers = 0;
+    $percentOthers = 0;
+    $j = 3;
+    while($j < $recordsNo){
+        $totalOthers += $dataArray[$j]["total"];
+        $pageshoursOthers += $dataArray[$j]["pageshours"];
+        $percentOthers += $dataArray[$j]["percent"];     
+        $j++;
+    }
+        $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department)
+                          VALUES ('Others', '".$totalOthers."', '".$pageshoursOthers."', '".$percentOthers."', '".$percent."')";
+        $result = $database->query($sqlInsert);
+            /*
     if($resultImport->num_rows > 0) {
     
 //while loop for inserting data to report database
@@ -288,7 +332,7 @@ if($resultDeptSum->num_rows > 0) {
                           VALUES ('".$row['selector']."', '".$row['total']."', '".$row['pageshours']."', '".$row['percent']."', '".$row['department']."')";
             $result = $database->query($sqlInsert);
         }
-    }
+    } */
 
             
             
