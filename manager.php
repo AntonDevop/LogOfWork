@@ -228,12 +228,19 @@ if ($result2->num_rows > 0) {
             
             
             
+//function for cleaning temporary table
             
+function truncateTemp(){
+    //include 'dbconnection.php';
+    
+    $sqlClean = "TRUNCATE TABLE temporary";
+    global $database;
+    $result = mysqli_query($database, $sqlClean);
+}             
             
 //creating report in table for this week            
 //first of all clean all previous data from report database
-$sqlClean = "TRUNCATE TABLE report";
-$database->query($sqlClean);            
+truncateTemp();
             
                         //--------First part of the report table - W R I T T E N translations:
 
@@ -253,8 +260,9 @@ $resultDeptSum2 = $database->query($sqlInsertSpace);
             
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
             
             
 //selecting all written translations for curent week grouped--------- B Y   D E P A R T M E N T
@@ -262,7 +270,7 @@ $sqlDept = "SELECT SUM(symbols), requesterDepartment FROM `writtenDB` WHERE date
 
 $resultDeptSum = $database->query($sqlDept);         
             
-if($resultDeptSum->num_rows > 0) {  
+if($resultDeptSum->num_rows > 0) {
     
 //while loop for inserting data to temporary database
     while($row = $resultDeptSum->fetch_assoc()) {
@@ -302,10 +310,10 @@ if($resultDeptSum->num_rows > 0) {
         
         $i++;
     }
-        print_r($dataArray[$i]["selector"]);
     }
 //inserting 3 champions 
-            
+
+//inserting Others row            
     $recordsNo = count($dataArray);     //length of array from temp table
             
     $selectorOthers = "Others";
@@ -323,6 +331,7 @@ if($resultDeptSum->num_rows > 0) {
         $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department)
                           VALUES ('Others', '".$totalOthers."', '".$pageshoursOthers."', '".$percentOthers."', '".$percent."')";
         $result = $database->query($sqlInsert);
+//inserting Others row            
             /*
     if($resultImport->num_rows > 0) {
     
@@ -348,8 +357,9 @@ $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, dep
 $resultDeptSum = $database->query($sqlInsertSpace);            
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
             
 $sqlDept = "SELECT SUM(symbols), requesterName FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterName";
 
@@ -415,8 +425,9 @@ $resultDeptSum = $database->query($sqlInsertSpace);
             
 
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();            
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
  
             
 //selecting all verbal translations for curent week grouped--------- B Y   D E P A R T M E N T
@@ -465,8 +476,9 @@ $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, dep
 $resultDeptSum = $database->query($sqlInsertSpace);             
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);            
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);            
             
             
 $sqlDept = "SELECT SUM(duration), requesterName FROM `verbalDB` WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterName ORDER BY duration DESC";
@@ -535,8 +547,9 @@ $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, dep
 $resultDeptSum = $database->query($sqlInsertSpace);
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();            
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
             
 //selecting all written translations for curent week grouped--------- B Y   T R A N S L A T O R S
 $sqlDept = "SELECT SUM(symbols), doneBy FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY doneBy";
@@ -586,8 +599,9 @@ $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, dep
 $resultDeptSum = $database->query($sqlInsertSpace);            
 
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
  
             
 //selecting all verbal translations for curent week grouped--------- B Y   T R A N S L A T O R S
