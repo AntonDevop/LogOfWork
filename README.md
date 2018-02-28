@@ -8,6 +8,7 @@ List of further improvements:
 - [X] Make "5 champions" + "others" (collectively) in each section of the Excel report file
 - [X] Check truncateTemp function and remove old code
 - [ ] Keep records on manager page till Saturday inclusively
+- [ ] Limit dateFinished and date for translators to make records for last week not later than Saturday. Check inputed dates by onchange attribute in input.
 - [ ] Clean-up all comments
 - [ ] Replace "delete a user" function with "edit a user" including "delete a user" button inside
 - [ ] Prompt to change password after first sign in
