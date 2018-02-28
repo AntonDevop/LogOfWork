@@ -119,7 +119,7 @@ $totalHours = "";
 include 'dbconnection.php';
 
 //getting records from WRITTEN
-$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' ORDER BY dateFinished DESC";
+$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEndShow."' ORDER BY dateFinished DESC";
 
 //(MySQLi Object-oriented)
 $result = $database->query($sql);
@@ -172,7 +172,7 @@ if ($result->num_rows > 0) {
             
             
 //getting records from VERBAL translations table
-$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' ORDER BY date DESC";
+$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEndShow."' ORDER BY date DESC";
 
 //(MySQLi Object-oriented)
 $result2 = $database->query($sql2);

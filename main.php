@@ -246,11 +246,17 @@ include 'dbconnection.php';
                   </div>
                   <div class="col-sm-3">
                     <label for="dateFinished">Date finished</label>
-                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01">
+                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01"  onchange="finishDateWritten()">
                   </div>
                 </div>
-
+                
+                <div class="form-row">
+                    <div class="alert alert-danger d-none" role="alert" id="writtenWrongDate">
+                      You chose a date beyound acceptable range. Try again and choose only date within current week.
+                    </div>
+                </div>
             </div>
+            
 <!-- Written section -->
            
 <!-- Verbal section -->
@@ -266,7 +272,7 @@ include 'dbconnection.php';
                 <div class="form-row">
                     <div class="col-sm-3 offset-sm-2">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date" >
+                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date" onchange="finishDateVerbal()">
                     </div>
 
                     <div class="col-sm-3">
@@ -294,7 +300,7 @@ include 'dbconnection.php';
 include 'dbconnection.php';
 
 //getting records from written
-$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' AND doneBy ='".$translatorName."' ORDER BY dateFinished DESC";
+$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEndShow."' AND doneBy ='".$translatorName."' ORDER BY dateFinished DESC";
 
 //(MySQLi Object-oriented)
 $result = $database->query($sql);
@@ -330,7 +336,7 @@ if ($result->num_rows > 0) {
             
             
 //getting records from verbal translations table
-$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' AND doneBy ='".$translatorName."' ORDER BY date DESC";
+$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEndShow."' AND doneBy ='".$translatorName."' ORDER BY date DESC";
 
 //(MySQLi Object-oriented)
 $result2 = $database->query($sql2);
@@ -375,7 +381,7 @@ if ($result2->num_rows > 0) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     
     <script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    
+    <script src="js/moment.js"></script>
     <script>
 	$(".section").hide();
 //starting jquery code for textbox
@@ -494,6 +500,71 @@ $(document).ready(function(){
     //Setting body padding-bottom equals to footer height
         var footerHeight = $("#footerwrap").outerHeight();
         $("body").css("padding-bottom", footerHeight);    
+    
+    
+    
+    // Limitation on active week ***********************
+    
+/*1*/
+//get today's Day of the week for switch    
+  var todayDay = moment().format('dddd');
+    
+//moment.js script for processing dates
+  var activWeekStart;
+  var activWeekEnd;
+    
+  switch (todayDay) {
+    case "Monday":
+      activWeekStart = moment().subtract(2, 'days');
+      activWeekEnd = moment().add(4, 'days');
+        break;
+    case "Tuesday":
+      activWeekStart = moment().subtract(3, 'days');
+      activWeekEnd = moment().add(3, 'days');
+        break;
+    case "Wednesday":
+      activWeekStart = moment().subtract(4, 'days');
+      activWeekEnd = moment().add(2, 'days');
+        break;
+    case "Thursday":
+      activWeekStart = moment().subtract(5, 'days');
+      activWeekEnd = moment().add(1, 'days');
+        break;
+    case "Friday":
+      activWeekStart = moment().subtract(6, 'days');
+      activWeekEnd = moment();
+        break;
+    case "Saturday":
+      activWeekStart = moment().subtract(7, 'days');
+      activWeekEnd = moment().add(6, 'days');
+        break;
+    case "Sunday":
+        day = "Sunday";
+      activWeekStart = moment().subtract(1, 'days');
+      activWeekEnd = moment().add(5, 'days');
+}
+    
+function finishDateWritten(){
+    // get entered Date
+    var finishDateWritten = $("#dateFinished").val(); 
+    var eneredDay = moment(finishDateWritten);
+    
+    if(eneredDay.isBefore(activWeekStart)){
+        $("#writtenWrongDate").removeClass("d-none");
+        alert("True");
+      } else {
+        alert("False");
+      }    
+}
+    
+function finishDateVerbal(){
+    // get entered Date
+    var finishDateVerbal = $("#dateStartedVerbal").val(); 
+    var eneredDay = moment(finishDateVerbal);
+    
+}
+    // Limitation on active week ***********************    
+    
         
 });
        
