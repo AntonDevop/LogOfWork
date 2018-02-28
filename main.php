@@ -246,13 +246,13 @@ include 'dbconnection.php';
                   </div>
                   <div class="col-sm-3">
                     <label for="dateFinished">Date finished</label>
-                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01"  onchange="finishDateWritten()">
+                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01">
                   </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="alert alert-danger d-none" role="alert" id="writtenWrongDate">
-                      You chose a date beyound acceptable range. Try again and choose only date within current week.
+                <div class="form-row justify-content-center mx-5">
+                    <div class="alert alert-danger d-none text-center" role="alert" id="writtenWrongDate">
+                      
                     </div>
                 </div>
             </div>
@@ -272,7 +272,7 @@ include 'dbconnection.php';
                 <div class="form-row">
                     <div class="col-sm-3 offset-sm-2">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date" onchange="finishDateVerbal()">
+                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date">
                     </div>
 
                     <div class="col-sm-3">
@@ -284,6 +284,12 @@ include 'dbconnection.php';
                         <input type="number" class="form-control verbal" id="duration" name="duration" placeholder="Enter duration in minutes" >    
                     </div>
                 </div>
+                
+                <div class="form-row justify-content-center mx-5">
+                    <div class="alert alert-danger d-none text-center" role="alert" id="verbalWrongDate">
+                      
+                    </div>
+                </div>                
                 
             </div>
 <!-- Verbal section -->
@@ -505,64 +511,131 @@ $(document).ready(function(){
     
     // Limitation on active week ***********************
     
-/*1*/
+
+$( "#dateFinished" ).change(function() {
+
+  //*************************************************************/
 //get today's Day of the week for switch    
   var todayDay = moment().format('dddd');
-    
+  
 //moment.js script for processing dates
-  var activWeekStart;
-  var activWeekEnd;
+  var activeWeekStart;
+  var activeWeekEnd;
     
   switch (todayDay) {
     case "Monday":
-      activWeekStart = moment().subtract(2, 'days');
-      activWeekEnd = moment().add(4, 'days');
+      activeWeekStart = moment().subtract(2, 'days');
+      activeWeekEnd = moment().add(4, 'days');
         break;
     case "Tuesday":
-      activWeekStart = moment().subtract(3, 'days');
-      activWeekEnd = moment().add(3, 'days');
+      activeWeekStart = moment().subtract(3, 'days');
+      activeWeekEnd = moment().add(3, 'days');
         break;
     case "Wednesday":
-      activWeekStart = moment().subtract(4, 'days');
-      activWeekEnd = moment().add(2, 'days');
+      activeWeekStart = moment().subtract(4, 'days');
+      activeWeekEnd = moment().add(2, 'days');
         break;
     case "Thursday":
-      activWeekStart = moment().subtract(5, 'days');
-      activWeekEnd = moment().add(1, 'days');
+      activeWeekStart = moment().subtract(5, 'days');
+      activeWeekEnd = moment().add(1, 'days');
         break;
     case "Friday":
-      activWeekStart = moment().subtract(6, 'days');
-      activWeekEnd = moment();
+      activeWeekStart = moment().subtract(6, 'days');
+      activeWeekEnd = moment();
         break;
     case "Saturday":
-      activWeekStart = moment().subtract(7, 'days');
-      activWeekEnd = moment().add(6, 'days');
+      activeWeekStart = moment().subtract(7, 'days');
+      activeWeekEnd = moment().add(6, 'days');
         break;
     case "Sunday":
         day = "Sunday";
-      activWeekStart = moment().subtract(1, 'days');
-      activWeekEnd = moment().add(5, 'days');
+      activeWeekStart = moment().subtract(1, 'days');
+      activeWeekEnd = moment().add(5, 'days');
 }
-    
-function finishDateWritten(){
+  /**************************************************************/
     // get entered Date
     var finishDateWritten = $("#dateFinished").val(); 
-    var eneredDay = moment(finishDateWritten);
+  
+var activeWeekStartForIF = activeWeekStart.subtract(1, 'days');
+var activeWeekEndForIF = activeWeekEnd.add(1, 'days');
     
-    if(eneredDay.isBefore(activWeekStart)){
+ 
+    //returns true if entered Date beyond acceptable limit and shows error alert section
+    if(moment(finishDateWritten).isBetween(activeWeekStartForIF, activeWeekEndForIF)==false){
+        
         $("#writtenWrongDate").removeClass("d-none");
-        alert("True");
+        $("#writtenWrongDate").html("You chose a date beyound an active week. <br>The active week started on: " + activeWeekStart.add(1, 'days').format('MMMM Do YYYY') + "<br> and will be finished on: " + activeWeekEnd.subtract(1, 'days').format('MMMM Do YYYY') + " <br>Try again and choose valid date within the active week.");
+        $("#dateFinished").val("");
       } else {
-        alert("False");
-      }    
-}
+          if ( $("#writtenWrongDate").hasClass("d-none") == false) {
+            $("#writtenWrongDate").addClass("d-none");
+          }
+      }
+});
+
     
-function finishDateVerbal(){
+$( "#dateStartedVerbal" ).change(function() {
+    
+  //*************************************************************/
+//get today's Day of the week for switch    
+  var todayDay = moment().format('dddd');
+  
+//moment.js script for processing dates
+  var activeWeekStart;
+  var activeWeekEnd;
+    
+  switch (todayDay) {
+    case "Monday":
+      activeWeekStart = moment().subtract(2, 'days');
+      activeWeekEnd = moment().add(4, 'days');
+        break;
+    case "Tuesday":
+      activeWeekStart = moment().subtract(3, 'days');
+      activeWeekEnd = moment().add(3, 'days');
+        break;
+    case "Wednesday":
+      activeWeekStart = moment().subtract(4, 'days');
+      activeWeekEnd = moment().add(2, 'days');
+        break;
+    case "Thursday":
+      activeWeekStart = moment().subtract(5, 'days');
+      activeWeekEnd = moment().add(1, 'days');
+        break;
+    case "Friday":
+      activeWeekStart = moment().subtract(6, 'days');
+      activeWeekEnd = moment();
+        break;
+    case "Saturday":
+      activeWeekStart = moment().subtract(7, 'days');
+      activeWeekEnd = moment().add(6, 'days');
+        break;
+    case "Sunday":
+        day = "Sunday";
+      activeWeekStart = moment().subtract(1, 'days');
+      activeWeekEnd = moment().add(5, 'days');
+}  
+  /**************************************************************/    
+    
     // get entered Date
     var finishDateVerbal = $("#dateStartedVerbal").val(); 
-    var eneredDay = moment(finishDateVerbal);
     
-}
+var activeWeekStartForIF = activeWeekStart.subtract(1, 'days');
+var activeWeekEndForIF = activeWeekEnd.add(1, 'days');    
+    
+    if(moment(finishDateVerbal).isSame(activeWeekStart) == false){
+    //returns true if entered Date beyond acceptable limit and shows error alert section
+    if(moment(finishDateVerbal).isBefore(activeWeekStart) || moment(finishDateVerbal).isAfter(activeWeekEnd)){
+        
+        $("#verbalWrongDate").removeClass("d-none");
+        $("#verbalWrongDate").html("You chose a date beyound an active week. <br>The active week started on: " + activeWeekStart.add(1, 'days').format('MMMM Do YYYY') + "<br> and will be finished on: " + activeWeekEnd.subtract(1, 'days').format('MMMM Do YYYY') + " <br>Try again and choose valid date within the active week.");
+        $("#dateStartedVerbal").val("");
+      } else {
+          if ( $("#verbalWrongDate").hasClass("d-none") == false) {
+            $("#verbalWrongDate").addClass("d-none");
+          }
+      }
+    }
+});
     // Limitation on active week ***********************    
     
         
