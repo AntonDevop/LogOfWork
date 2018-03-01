@@ -130,6 +130,18 @@ if (array_key_exists("manager", $_COOKIE)) {
         if($_SERVER["REQUEST_METHOD"] == "POST") {
             
             $name = $_POST["fullName"];
+            
+            //updating cookie if it set with new name
+            if(array_key_exists("name", $_COOKIE)) {
+                setcookie("name", $name, time()+ 60*60*24*365);
+                $_SESSION['name'] = $_COOKIE['name'];
+                $translatorName = $_SESSION['name'];
+            } else {
+                //if cookie is not set update session name
+                $_SESSION['name'] = $name;
+                $translatorName = $_SESSION['name'];
+            }
+            
             $email = $_POST["email"];
             $sharedEmail = $_POST["emailShared"];
             $company = $_POST["company"];
