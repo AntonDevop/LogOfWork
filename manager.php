@@ -119,7 +119,7 @@ $totalHours = "";
 include 'dbconnection.php';
 
 //getting records from WRITTEN
-$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' ORDER BY dateFinished DESC";
+$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEndShow."' ORDER BY dateFinished DESC";
 
 //(MySQLi Object-oriented)
 $result = $database->query($sql);
@@ -172,7 +172,7 @@ if ($result->num_rows > 0) {
             
             
 //getting records from VERBAL translations table
-$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' ORDER BY date DESC";
+$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEndShow."' ORDER BY date DESC";
 
 //(MySQLi Object-oriented)
 $result2 = $database->query($sql2);
@@ -209,7 +209,7 @@ if ($result2->num_rows > 0) {
               </tr>";
             $totalMinutes += $row["duration"];
     }
-    $totalHours = floor($totalMinutes / 60);
+    $totalHours = $totalMinutes / 60;
     echo "<tr>
             <td>Total</td>
             <td></td>
@@ -228,12 +228,214 @@ if ($result2->num_rows > 0) {
             
             
             
+//function for cleaning temporary table
             
+function truncateTemp(){
+    //include 'dbconnection.php';
+    
+    $sqlClean = "TRUNCATE TABLE temporary";
+    global $database;
+    $result = mysqli_query($database, $sqlClean);
+}
+            
+
+            
+            
+            
+            
+/**********************************************************/
+
+//function on inserting to report ↓
+    function reportInsertion($limit, $from, $by, $nameInsert = "noname"){
+        //$limit - the limit of records number after which remained collapsed under Others
+        //$from - writtenDB or verbalDB
+        //$by - requesterDepartment; requesterName; doneBy
+        //$nameInsert - optional argument if any value set - last column "department" in report table will be populated with for sections Written and Verbal translations by Names
+        global $database, $weekStart, $weekEnd, $totalSymbols, $totalMinutes;
+        
+        $sqlcheck = "SELECT * FROM `".$from."`";
+        $resultCheck = $database->query($sqlcheck);
+        $row = $resultCheck->fetch_assoc();
+        
+        $whereFilter = "";
+        
+        //check for type of the table writtenDB or verbalDB. dateFinished contained only in writtenDB ↓
+        if(array_key_exists("dateFinished",$row)) {
+            //part processing written table ↓
+            $sumSelector = "symbols";
+            $sql = "SELECT SUM(".$sumSelector."), ".$by." FROM `".$from."` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY ".$by.""; 
+            
+            $resultSum = $database->query($sql);
+
+
+            if($resultSum->num_rows > 0) {
+                //while loop for inserting data to temporary database
+
+                while($row = $resultSum->fetch_assoc()) {
+                    $percentage = $row['SUM('.$sumSelector.')'] / $totalSymbols * 100;
+                    $pages = $row['SUM('.$sumSelector.')'] / 1800;
+                    $selector = $row[''.$by.''];
+                    $departmentOfRequester = '';
+                    
+                    //trigger for sections BY NAME ↓
+                    if($nameInsert != "noname"){
+                        //getting department of a requester
+                        $name = $row['requesterName'];
+                        $sqlDeptQuery = "SELECT * FROM `".$from."` WHERE requesterName = '".$name."'";
+                        $resultDeptQuery = $database->query($sqlDeptQuery);
+                        
+                        if($resultDeptQuery->num_rows > 0) {
+                            while($row3 = $resultDeptQuery->fetch_assoc()) {
+                                $departmentOfRequester = $row3['requesterDepartment'];
+                            }
+                        }
+                    }
+                    //trigger for sections BY NAME ↑                    
+                    
+                    
+                    $sqlInsert = "INSERT INTO temporary (selector, total, pageshours, percent, department)
+                          VALUES ('".$selector."', '".$row['SUM('.$sumSelector.')']."', '".$pages."', '".$percentage."', '".$departmentOfRequester."')";
+                    $result = $database->query($sqlInsert);
+                }
+            }            
+            //part processing written table ↑
+        } else {
+            //part processing verbal table ↓
+            $sumSelector = "duration";
+            $sql = "SELECT SUM(".$sumSelector."), ".$by." FROM `".$from."` WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY ".$by." ORDER BY duration DESC";
+            
+            $resultSum = $database->query($sql);
+            
+            if($resultSum->num_rows > 0) {
+                //while loop for inserting data to temporary database
+                while($row = $resultSum->fetch_assoc()) {                        
+                    $percentage = $row['SUM('.$sumSelector.')'] / $totalMinutes * 100;
+                                        
+                    $hours = $row['SUM('.$sumSelector.')'] / 60;
+                    $selector = $row[''.$by.''];
+                    $departmentOfRequester = '';
+                    
+                    //trigger for sections BY NAME ↓
+                    if($nameInsert != "noname"){
+                        //getting department of a requester
+                        $name = $row['requesterName'];
+                        $sqlDeptQuery = "SELECT * FROM `".$from."` WHERE requesterName = '".$name."'";
+                        $resultDeptQuery = $database->query($sqlDeptQuery);
+                        
+                        if($resultDeptQuery->num_rows > 0) {
+                            while($row2 = $resultDeptQuery->fetch_assoc()) {
+                                $departmentOfRequester = $row2['requesterDepartment'];
+                            }
+                        }
+                    }
+                    //trigger for sections BY NAME ↑
+                    
+                    $sqlInsert = "INSERT INTO temporary (selector, total, pageshours, percent, department)
+                                  VALUES ('".$selector."', '".$row['SUM('.$sumSelector.')']."', '".$hours."', '".$percentage."', '".$departmentOfRequester."')";
+                    $result = $database->query($sqlInsert);
+                    
+                    
+                }
+            }
+            //part processing verbal table ↑
+        }
+        
+        //$resultSum = $database->query($sql);
+
+      /*  
+        if($resultSum->num_rows > 0) {
+            //while loop for inserting data to temporary database
+    
+            while($row = $resultSum->fetch_assoc()) {
+                $percentage = $row['SUM('.$sumSelector.')'] / $totalSymbols * 100;
+                $pages = $row['SUM('.$sumSelector.')'] / 1800;
+                $selector = $row[''.$by.''];
+                $sqlInsert = "INSERT INTO temporary (selector, total, pageshours, percent)
+                      VALUES ('".$selector."', '".$row['SUM('.$sumSelector.')']."', '".$pages."', '".$percentage."')";
+                $result = $database->query($sqlInsert);
+            }
+        }
+        */
+        
+        //importing from temporary database to the report database ↓
+
+        $sqlImport = "SELECT * FROM `temporary` ORDER BY total DESC";
+        $resultImport = $database->query($sqlImport);
+        
+        
+        //fetching all rows from temporary table into associated array ↓
+        $dataArray = [];
+        while ($row = $resultImport->fetch_assoc()) {
+            $dataArray[] = $row;
+        }            
+        //fetching all rows from temporary table into associated array ↑
+                
+        
+        //inserting $limit champions ↓            
+        if($resultImport->num_rows > 0) {
+            $i = 0;
+            while($i < $limit) {
+                $selector = $dataArray[$i]["selector"];
+                $total = $dataArray[$i]["total"];
+                $pageshours = $dataArray[$i]["pageshours"];
+                $percent = $dataArray[$i]["percent"];
+                $department = $dataArray[$i]["department"];
+                
+                $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department) VALUES ('".$selector."', '".$total."', '".$pageshours."', '".$percent."', '".$department."')";
+                $result = $database->query($sqlInsert);
+                
+                $i++;
+            }
+        }
+        //inserting $limit champions ↑
+        
+        //inserting Others row ↓
+        $recordsNo = count($dataArray);     
+        //length of array from temp table
+            
+        $selectorOthers = "Others";
+        
+        //counters for others
+        $totalOthers = 0;
+        $pageshoursOthers = 0;
+        $percentOthers = 0;
+        $j = $limit;
+        
+        while($j < $recordsNo){
+            $totalOthers += $dataArray[$j]["total"];
+            $pageshoursOthers += $dataArray[$j]["pageshours"];
+            $percentOthers += $dataArray[$j]["percent"];
+            $j++;
+        }
+        
+        $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department)
+                          VALUES ('Others', '".$totalOthers."', '".$pageshoursOthers."', '".$percentOthers."', '')";
+        $result = $database->query($sqlInsert);
+        //inserting Others row ↑
+        
+        //inserting space row between the sections ↓
+        $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department) VALUES ('', '', '', '', '')";
+        
+        $database->query($sqlInsertSpace);        
+    }
+//function on inserting to report ↑
+            
+            
+/**********************************************************/
+            
+            
+            
+            
+            
+            
+//cleaning report table from old version
+                
+    $sqlClean = "TRUNCATE TABLE report";
+    $result = mysqli_query($database, $sqlClean);
             
 //creating report in table for this week            
 //first of all clean all previous data from report database
-$sqlClean = "TRUNCATE TABLE report";
-$database->query($sqlClean);            
+truncateTemp();
             
                         //--------First part of the report table - W R I T T E N translations:
 
@@ -253,16 +455,21 @@ $resultDeptSum2 = $database->query($sqlInsertSpace);
             
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
             
             
 //selecting all written translations for curent week grouped--------- B Y   D E P A R T M E N T
+            
+reportInsertion(4, "writtenDB", "requesterDepartment");
+            
+  /*        before implementing function          
 $sqlDept = "SELECT SUM(symbols), requesterDepartment FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterDepartment";
 
 $resultDeptSum = $database->query($sqlDept);         
             
-if($resultDeptSum->num_rows > 0) {  
+if($resultDeptSum->num_rows > 0) {
     
 //while loop for inserting data to temporary database
     while($row = $resultDeptSum->fetch_assoc()) {
@@ -279,7 +486,52 @@ if($resultDeptSum->num_rows > 0) {
 
     $sqlImport = "SELECT * FROM `temporary` ORDER BY total DESC";
     $resultImport = $database->query($sqlImport);
+            
+//fetching all rows from temporary table into associated array            
+    $dataArray = [];
+    while ($row = $resultImport->fetch_assoc()) {
+    $dataArray[] = $row;
+    }
+//fetching all rows from temporary table into associated array
     
+//inserting 3 champions             
+    if($resultImport->num_rows > 0) {
+    $i = 0;
+    while($i < 3) {
+        $selector = $dataArray[$i]["selector"];
+        $total = $dataArray[$i]["total"];
+        $pageshours = $dataArray[$i]["pageshours"];
+        $percent = $dataArray[$i]["percent"];
+        
+        $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department)
+                          VALUES ('".$selector."', '".$total."', '".$pageshours."', '".$percent."', '".$percent."')";
+            $result = $database->query($sqlInsert);
+        
+        $i++;
+    }
+    }
+//inserting 3 champions 
+
+//inserting Others row            
+    $recordsNo = count($dataArray);     //length of array from temp table
+            
+    $selectorOthers = "Others";
+//counters for others            
+    $totalOthers = 0;
+    $pageshoursOthers = 0;
+    $percentOthers = 0;
+    $j = 3;
+    while($j < $recordsNo){
+        $totalOthers += $dataArray[$j]["total"];
+        $pageshoursOthers += $dataArray[$j]["pageshours"];
+        $percentOthers += $dataArray[$j]["percent"];     
+        $j++;
+    }
+        $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department)
+                          VALUES ('Others', '".$totalOthers."', '".$pageshoursOthers."', '".$percentOthers."', '".$percent."')";
+        $result = $database->query($sqlInsert);
+//inserting Others row            
+            /*
     if($resultImport->num_rows > 0) {
     
 //while loop for inserting data to report database
@@ -288,24 +540,35 @@ if($resultDeptSum->num_rows > 0) {
                           VALUES ('".$row['selector']."', '".$row['total']."', '".$row['pageshours']."', '".$row['percent']."', '".$row['department']."')";
             $result = $database->query($sqlInsert);
         }
-    }
+    } */
 
             
             
 //selecting all written translations for curent week grouped ---------B Y    N A M E S
 //inserting space row between written by department and by name
+
+//inserting description row between written by department and by name
+$sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
+                      VALUES ('Written translations by Names', '', '', '', '')";
+$resultDeptSum = $database->query($sqlInsertSpace);
+
+//clearing temporary database
+truncateTemp();                        
+reportInsertion(4, "writtenDB", "requesterName", "name");
+ 
+            
+            
+            
+/*
 $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
                       VALUES ('', '', '', '', '')";
 $database->query($sqlInsertSpace);
             
-//inserting description row between written by department and by name
-$sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
-                      VALUES ('Written translations by Names', '', '', '', '')";
-$resultDeptSum = $database->query($sqlInsertSpace);            
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
             
 $sqlDept = "SELECT SUM(symbols), requesterName FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterName";
 
@@ -352,30 +615,39 @@ if($resultDeptSum->num_rows > 0) {
             $result = $database->query($sqlInsert);
         }
     }
-            
+            */
             
             
                     //--------Second part of the report table - V E R B A L translations:
 
+//inserting description row between written and verbal translations
+$sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
+                      VALUES ('Verbal translations by Departments', '".$totalMinutes."', '".$totalHours."', '100', '')";
+$resultDeptSum = $database->query($sqlInsertSpace);
+            
+            
+            /*
 //inserting space row between written and verbal
 $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
                       VALUES ('', '', '', '', '')";
 
 $resultDeptSum = $database->query($sqlInsertSpace);
-            
-//inserting description row between written and verbal translations
-$sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
-                      VALUES ('Verbal translations by Departments', '".$totalMinutes."', '".$totalHours."', '100', '')";
+            */
 
-$resultDeptSum = $database->query($sqlInsertSpace); 
             
 
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();            
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
  
             
 //selecting all verbal translations for curent week grouped--------- B Y   D E P A R T M E N T
+            
+reportInsertion(4, "verbalDB", "requesterDepartment");            
+            
+            
+            /*
 $sqlDept = "SELECT SUM(duration), requesterDepartment FROM `verbalDB` WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterDepartment ORDER BY duration DESC";
 
 $resultDeptSum = $database->query($sqlDept);
@@ -407,22 +679,33 @@ if($resultDeptSum->num_rows > 0) {
     }
     }
 
-
+*/
 
 //selecting all verbal translations for curent week grouped ---------B Y    N A M E S
-//inserting space row between verbal by department and by names
-$sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
-                      VALUES ('', '', '', '', '')";
-$database->query($sqlInsertSpace);
             
 //inserting description row between verbal by department and by name
 $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
                       VALUES ('Verbal translations by Names', '', '', '', '')";
-$resultDeptSum = $database->query($sqlInsertSpace);             
+$resultDeptSum = $database->query($sqlInsertSpace);
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);            
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);     
+            
+reportInsertion(4, "verbalDB", "requesterName", "name");                
+
+            
+            
+            
+            
+            
+            
+            /*
+//inserting space row between verbal by department and by names
+$sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
+                      VALUES ('', '', '', '', '')";
+$database->query($sqlInsertSpace);
             
             
 $sqlDept = "SELECT SUM(duration), requesterName FROM `verbalDB` WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterName ORDER BY duration DESC";
@@ -471,7 +754,7 @@ if($resultDeptSum->num_rows > 0) {
         }
     }            
 
-
+*/
 
                     //--------Third part of the report table - W R I T T E N translations by Translators
 //inserting space row
@@ -491,8 +774,9 @@ $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, dep
 $resultDeptSum = $database->query($sqlInsertSpace);
             
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();            
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
             
 //selecting all written translations for curent week grouped--------- B Y   T R A N S L A T O R S
 $sqlDept = "SELECT SUM(symbols), doneBy FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY doneBy";
@@ -542,8 +826,9 @@ $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, dep
 $resultDeptSum = $database->query($sqlInsertSpace);            
 
 //clearing temporary database
-$sqlClean = "TRUNCATE TABLE temporary";
-$database->query($sqlClean);
+truncateTemp();
+//$sqlClean = "TRUNCATE TABLE temporary";
+//$database->query($sqlClean);
  
             
 //selecting all verbal translations for curent week grouped--------- B Y   T R A N S L A T O R S

@@ -249,8 +249,14 @@ include 'dbconnection.php';
                     <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01">
                   </div>
                 </div>
-
+                
+                <div class="form-row justify-content-center mx-5">
+                    <div class="alert alert-danger d-none text-center" role="alert" id="writtenWrongDate">
+                      
+                    </div>
+                </div>
             </div>
+            
 <!-- Written section -->
            
 <!-- Verbal section -->
@@ -266,7 +272,7 @@ include 'dbconnection.php';
                 <div class="form-row">
                     <div class="col-sm-3 offset-sm-2">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date" >
+                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date">
                     </div>
 
                     <div class="col-sm-3">
@@ -278,6 +284,12 @@ include 'dbconnection.php';
                         <input type="number" class="form-control verbal" id="duration" name="duration" placeholder="Enter duration in minutes" >    
                     </div>
                 </div>
+                
+                <div class="form-row justify-content-center mx-5">
+                    <div class="alert alert-danger d-none text-center" role="alert" id="verbalWrongDate">
+                      
+                    </div>
+                </div>                
                 
             </div>
 <!-- Verbal section -->
@@ -294,7 +306,7 @@ include 'dbconnection.php';
 include 'dbconnection.php';
 
 //getting records from written
-$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' AND doneBy ='".$translatorName."' ORDER BY dateFinished DESC";
+$sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEndShow."' AND doneBy ='".$translatorName."' ORDER BY dateFinished DESC";
 
 //(MySQLi Object-oriented)
 $result = $database->query($sql);
@@ -330,7 +342,7 @@ if ($result->num_rows > 0) {
             
             
 //getting records from verbal translations table
-$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEnd."' AND doneBy ='".$translatorName."' ORDER BY date DESC";
+$sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEndShow."' AND doneBy ='".$translatorName."' ORDER BY date DESC";
 
 //(MySQLi Object-oriented)
 $result2 = $database->query($sql2);
@@ -375,7 +387,7 @@ if ($result2->num_rows > 0) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     
     <script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-    
+    <script src="js/moment.js"></script>
     <script>
 	$(".section").hide();
 //starting jquery code for textbox
@@ -494,6 +506,138 @@ $(document).ready(function(){
     //Setting body padding-bottom equals to footer height
         var footerHeight = $("#footerwrap").outerHeight();
         $("body").css("padding-bottom", footerHeight);    
+    
+    
+    
+    // Limitation on active week ***********************
+    
+
+$( "#dateFinished" ).change(function() {
+
+  //*************************************************************/
+//get today's Day of the week for switch    
+  var todayDay = moment().format('dddd');
+  
+//moment.js script for processing dates
+  var activeWeekStart;
+  var activeWeekEnd;
+    
+  switch (todayDay) {
+    case "Monday":
+      activeWeekStart = moment().subtract(2, 'days');
+      activeWeekEnd = moment().add(4, 'days');
+        break;
+    case "Tuesday":
+      activeWeekStart = moment().subtract(3, 'days');
+      activeWeekEnd = moment().add(3, 'days');
+        break;
+    case "Wednesday":
+      activeWeekStart = moment().subtract(4, 'days');
+      activeWeekEnd = moment().add(2, 'days');
+        break;
+    case "Thursday":
+      activeWeekStart = moment().subtract(5, 'days');
+      activeWeekEnd = moment().add(1, 'days');
+        break;
+    case "Friday":
+      activeWeekStart = moment().subtract(6, 'days');
+      activeWeekEnd = moment();
+        break;
+    case "Saturday":
+      activeWeekStart = moment().subtract(7, 'days');
+      activeWeekEnd = moment().add(6, 'days');
+        break;
+    case "Sunday":
+        day = "Sunday";
+      activeWeekStart = moment().subtract(1, 'days');
+      activeWeekEnd = moment().add(5, 'days');
+}
+  /**************************************************************/
+    // get entered Date
+    var finishDateWritten = $("#dateFinished").val(); 
+  
+var activeWeekStartForIF = activeWeekStart.subtract(1, 'days');
+var activeWeekEndForIF = activeWeekEnd.add(1, 'days');
+    
+ 
+    //returns true if entered Date beyond acceptable limit and shows error alert section
+    if(moment(finishDateWritten).isBetween(activeWeekStartForIF, activeWeekEndForIF)==false){
+        
+        $("#writtenWrongDate").removeClass("d-none");
+        $("#writtenWrongDate").html("You chose a date beyound an active week. <br>The active week started on: " + activeWeekStart.add(1, 'days').format('MMMM Do YYYY') + "<br> and will be finished on: " + activeWeekEnd.subtract(1, 'days').format('MMMM Do YYYY') + " <br>Try again and choose valid date within the active week.");
+        $("#dateFinished").val("");
+      } else {
+          if ( $("#writtenWrongDate").hasClass("d-none") == false) {
+            $("#writtenWrongDate").addClass("d-none");
+          }
+      }
+});
+
+    
+$( "#dateStartedVerbal" ).change(function() {
+    
+  //*************************************************************/
+//get today's Day of the week for switch    
+  var todayDay = moment().format('dddd');
+  
+//moment.js script for processing dates
+  var activeWeekStart;
+  var activeWeekEnd;
+    
+  switch (todayDay) {
+    case "Monday":
+      activeWeekStart = moment().subtract(2, 'days');
+      activeWeekEnd = moment().add(4, 'days');
+        break;
+    case "Tuesday":
+      activeWeekStart = moment().subtract(3, 'days');
+      activeWeekEnd = moment().add(3, 'days');
+        break;
+    case "Wednesday":
+      activeWeekStart = moment().subtract(4, 'days');
+      activeWeekEnd = moment().add(2, 'days');
+        break;
+    case "Thursday":
+      activeWeekStart = moment().subtract(5, 'days');
+      activeWeekEnd = moment().add(1, 'days');
+        break;
+    case "Friday":
+      activeWeekStart = moment().subtract(6, 'days');
+      activeWeekEnd = moment();
+        break;
+    case "Saturday":
+      activeWeekStart = moment().subtract(7, 'days');
+      activeWeekEnd = moment().add(6, 'days');
+        break;
+    case "Sunday":
+        day = "Sunday";
+      activeWeekStart = moment().subtract(1, 'days');
+      activeWeekEnd = moment().add(5, 'days');
+}  
+  /**************************************************************/    
+    
+    // get entered Date
+    var finishDateVerbal = $("#dateStartedVerbal").val(); 
+    
+var activeWeekStartForIF = activeWeekStart.subtract(1, 'days');
+var activeWeekEndForIF = activeWeekEnd.add(1, 'days');    
+    
+    if(moment(finishDateVerbal).isSame(activeWeekStart) == false){
+    //returns true if entered Date beyond acceptable limit and shows error alert section
+    if(moment(finishDateVerbal).isBefore(activeWeekStart) || moment(finishDateVerbal).isAfter(activeWeekEnd)){
+        
+        $("#verbalWrongDate").removeClass("d-none");
+        $("#verbalWrongDate").html("You chose a date beyound an active week. <br>The active week started on: " + activeWeekStart.add(1, 'days').format('MMMM Do YYYY') + "<br> and will be finished on: " + activeWeekEnd.subtract(1, 'days').format('MMMM Do YYYY') + " <br>Try again and choose valid date within the active week.");
+        $("#dateStartedVerbal").val("");
+      } else {
+          if ( $("#verbalWrongDate").hasClass("d-none") == false) {
+            $("#verbalWrongDate").addClass("d-none");
+          }
+      }
+    }
+});
+    // Limitation on active week ***********************    
+    
         
 });
        
