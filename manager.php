@@ -462,7 +462,7 @@ truncateTemp();
             
 //selecting all written translations for curent week grouped--------- B Y   D E P A R T M E N T
             
-reportInsertion(4, "writtenDB", "requesterDepartment");
+reportInsertion(5, "writtenDB", "requesterDepartment");
             
   /*        before implementing function          
 $sqlDept = "SELECT SUM(symbols), requesterDepartment FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterDepartment";
@@ -554,7 +554,7 @@ $resultDeptSum = $database->query($sqlInsertSpace);
 
 //clearing temporary database
 truncateTemp();                        
-reportInsertion(4, "writtenDB", "requesterName", "name");
+reportInsertion(5, "writtenDB", "requesterName", "name");
  
             
             
@@ -644,7 +644,7 @@ truncateTemp();
             
 //selecting all verbal translations for curent week grouped--------- B Y   D E P A R T M E N T
             
-reportInsertion(4, "verbalDB", "requesterDepartment");            
+reportInsertion(5, "verbalDB", "requesterDepartment");            
             
             
             /*
@@ -693,7 +693,7 @@ truncateTemp();
 //$sqlClean = "TRUNCATE TABLE temporary";
 //$database->query($sqlClean);     
             
-reportInsertion(4, "verbalDB", "requesterName", "name");                
+reportInsertion(5, "verbalDB", "requesterName", "name");                
 
             
             
