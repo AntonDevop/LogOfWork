@@ -217,7 +217,7 @@ if ($result2->num_rows > 0) {
             <td></td>
             <td></td>            
             <td></td>
-            <td>".$totalHours." hours</td>
+            <td>".round($totalHours, 1)." hours</td>
           </tr>
             </tbody></table>";
     echo "</tbody></table>";
@@ -273,7 +273,7 @@ function truncateTemp(){
 
                 while($row = $resultSum->fetch_assoc()) {
                     $percentage = $row['SUM('.$sumSelector.')'] / $totalSymbols * 100;
-                    $pages = $row['SUM('.$sumSelector.')'] / 1800;
+                    $pages = $row['SUM('.$sumSelector.')'] / 1600;
                     $selector = $row[''.$by.''];
                     $departmentOfRequester = '';
                     
@@ -348,7 +348,7 @@ function truncateTemp(){
     
             while($row = $resultSum->fetch_assoc()) {
                 $percentage = $row['SUM('.$sumSelector.')'] / $totalSymbols * 100;
-                $pages = $row['SUM('.$sumSelector.')'] / 1800;
+                $pages = $row['SUM('.$sumSelector.')'] / 1600;
                 $selector = $row[''.$by.''];
                 $sqlInsert = "INSERT INTO temporary (selector, total, pageshours, percent)
                       VALUES ('".$selector."', '".$row['SUM('.$sumSelector.')']."', '".$pages."', '".$percentage."')";
@@ -445,7 +445,7 @@ truncateTemp();
             */
 $totalPages = '';
 if (is_numeric($totalSymbols)){
-$totalPages = $totalSymbols / 1800;
+$totalPages = $totalSymbols / 1600;
 }
  
 $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
@@ -462,7 +462,7 @@ truncateTemp();
             
 //selecting all written translations for curent week grouped--------- B Y   D E P A R T M E N T
             
-reportInsertion(4, "writtenDB", "requesterDepartment");
+reportInsertion(5, "writtenDB", "requesterDepartment");
             
   /*        before implementing function          
 $sqlDept = "SELECT SUM(symbols), requesterDepartment FROM `writtenDB` WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterDepartment";
@@ -474,7 +474,7 @@ if($resultDeptSum->num_rows > 0) {
 //while loop for inserting data to temporary database
     while($row = $resultDeptSum->fetch_assoc()) {
         $percentage = $row['SUM(symbols)'] / $totalSymbols * 100;
-        $pages = $row['SUM(symbols)'] / 1800;
+        $pages = $row['SUM(symbols)'] / 1600;
         $sqlInsert = "INSERT INTO temporary (selector, total, pageshours, percent)
                       VALUES ('".$row['requesterDepartment']."', '".$row['SUM(symbols)']."', '".$pages."', '".$percentage."')";
         $result = $database->query($sqlInsert);
@@ -554,7 +554,7 @@ $resultDeptSum = $database->query($sqlInsertSpace);
 
 //clearing temporary database
 truncateTemp();                        
-reportInsertion(4, "writtenDB", "requesterName", "name");
+reportInsertion(5, "writtenDB", "requesterName", "name");
  
             
             
@@ -579,7 +579,7 @@ if($resultDeptSum->num_rows > 0) {
 //while loop for inserting data to report database
     while($row = $resultDeptSum->fetch_assoc()) {
         $percentage = $row['SUM(symbols)'] / $totalSymbols * 100;
-        $pages = $row['SUM(symbols)'] / 1800;
+        $pages = $row['SUM(symbols)'] / 1600;
         $symbols = $row['SUM(symbols)'];
         
         //getting department of a requester
@@ -644,7 +644,7 @@ truncateTemp();
             
 //selecting all verbal translations for curent week grouped--------- B Y   D E P A R T M E N T
             
-reportInsertion(4, "verbalDB", "requesterDepartment");            
+reportInsertion(5, "verbalDB", "requesterDepartment");            
             
             
             /*
@@ -693,7 +693,7 @@ truncateTemp();
 //$sqlClean = "TRUNCATE TABLE temporary";
 //$database->query($sqlClean);     
             
-reportInsertion(4, "verbalDB", "requesterName", "name");                
+reportInsertion(5, "verbalDB", "requesterName", "name");                
 
             
             
@@ -767,7 +767,7 @@ $resultDeptSum = $database->query($sqlInsertSpace);
             $totalPages = $totalSymbols / 1800; 
             */
 if (is_numeric($totalSymbols)){
-$totalPages = $totalSymbols / 1800;
+$totalPages = $totalSymbols / 1600;
 }
 $sqlInsertSpace = "INSERT INTO report (selector, total, pageshours, percent, department)
                       VALUES ('Written translations by Translators', '".$totalSymbols."', '".$totalPages."', '100', '')";
@@ -788,7 +788,7 @@ if($resultDeptSum->num_rows > 0) {
 //while loop for inserting data to report database
     while($row = $resultDeptSum->fetch_assoc()) {
         $percentage = $row['SUM(symbols)'] / $totalSymbols * 100;
-        $pages = $row['SUM(symbols)'] / 1800;
+        $pages = $row['SUM(symbols)'] / 1600;
         $sqlInsert = "INSERT INTO temporary (selector, total, pageshours, percent)
                       VALUES ('".$row['doneBy']."', '".$row['SUM(symbols)']."', '".$pages."', '".$percentage."')";
         $result = $database->query($sqlInsert);
