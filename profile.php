@@ -131,15 +131,43 @@ if (array_key_exists("manager", $_COOKIE)) {
             
             $name = $_POST["fullName"];
             
-            //updating cookie if it set with new name
-            if(array_key_exists("name", $_COOKIE)) {
-                setcookie("name", $name, time()+ 60*60*24*365);
-                $_SESSION['name'] = $_COOKIE['name'];
-                $translatorName = $_SESSION['name'];
-            } else {
-                //if cookie is not set update session name
-                $_SESSION['name'] = $name;
-                $translatorName = $_SESSION['name'];
+            if($name != $translatorName){
+                /* Back up option 
+                //
+                $sqlUpdate = "UPDATE `verbalDB`, `writtenDB`
+                        SET `verbalDB`.`doneBy` = '".$name."',
+                            `writtenDB`.`doneBy` ='".$name."'
+                        WHERE `items`.`doneBy` = '".$translatorName."'";
+                        
+                        $resultUpdateTables = $database->query($sqlUpdate);
+                
+                
+                */
+                $sqlUpdateVerbal = "UPDATE `verbalDB`
+                        SET `doneBy` = '".$name."'                            
+                        WHERE `doneBy` = '".$translatorName."'";
+                
+                $sqlUpdateWritten = "UPDATE `writtenDB`
+                        SET `doneBy` = '".$name."'
+                        WHERE `doneBy` = '".$translatorName."'";
+                
+                $resultUpdateTables = $database->query($sqlUpdateVerbal);
+                $resultUpdateTables2 = $database->query($sqlUpdateWritten);
+                
+                
+                
+                
+                //updating cookie if it was set with new name
+                if(array_key_exists("name", $_COOKIE)) {
+                    setcookie("name", $name, time()+ 60*60*24*365);
+                    $_SESSION['name'] = $_COOKIE['name'];
+                    $translatorName = $_SESSION['name'];
+                } else {
+                    //if cookie is not set update session name
+                    $_SESSION['name'] = $name;
+                    $translatorName = $_SESSION['name'];
+                }
+                
             }
             
             $email = $_POST["email"];
