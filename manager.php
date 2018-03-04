@@ -367,14 +367,15 @@ function truncateTemp(){
         $dataArray = [];
         while ($row = $resultImport->fetch_assoc()) {
             $dataArray[] = $row;
-        }            
+        }
         //fetching all rows from temporary table into associated array ↑
                 
         
-        //inserting $limit champions ↓            
+        //inserting $limit champions ↓
+        
         if($resultImport->num_rows > 0) {
             $i = 0;
-            while($i < $limit) {
+            while(($i<$limit) && ($i <= $resultImport->num_rows)) {
                 $selector = $dataArray[$i]["selector"];
                 $total = $dataArray[$i]["total"];
                 $pageshours = $dataArray[$i]["pageshours"];
@@ -386,6 +387,7 @@ function truncateTemp(){
                 
                 $i++;
             }
+        }
         }
         //inserting $limit champions ↑
         

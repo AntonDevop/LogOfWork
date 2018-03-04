@@ -379,7 +379,7 @@ if ($result2->num_rows > 0) {
 }
 ?>
     </div>
-
+        <div id="ajaxShow"></div>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -728,6 +728,7 @@ var activeWeekEndForIF = activeWeekEnd.add(1, 'days');
                 data: {arrayRec:arrayRec},
                 success:function(data){
                         alert("You have deleted the record succcessfuly!");
+                    $("#ajaxShow").html(data);
                     }
                 
             });
