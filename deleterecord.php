@@ -5,38 +5,59 @@ include 'dbconnection.php';
 
 if(isset($_POST["arrayRec"])) {
     $output = $_POST["arrayRec"];
+    $rowArray = $_POST["arrayRec"];
+    
+//fetching to variables general info from row ↓
+$translationType = $rowArray["type"];
+$by = $rowArray["by"];
+$from = $rowArray["from"];
+//fetching to variables general info from row ↑
+
+//splitting code by type of translation ↓
+if($translationType == "written"){
+    
+    $doc = $rowArray["doc"];
+    $symbols = $rowArray["symbols"];
+    $start = date('y-m-d', strtotime($rowArray["start"]));
+    $finish = date('y-m-d', strtotime($rowArray["finish"]));
     
     
-    /*
-//making query to search all rows from database
-    $query = "SELECT * FROM clients3 WHERE Name LIKE '%".$_POST['query']."%'";
-//executing query and store result 
-    $result = mysqli_query($database, $query);
-//creating unordered list in $output to display results
-    $output = '<ul class="list-group">';
-//if something found from clients database do the following
-    if(mysqli_num_rows($result) > 0) {
-//while loop for storing recived data from database in associative array called $row
-        while($row = mysqli_fetch_array($result)) {
-            $output .= '<li>'.$row["Name"].'. From: '.$row["Department"].'</li>';
-        }
-    } else {
-        $output .='
-        <div class="alert alert-danger d-flex justify-content-center align-items-center" role="alert">
-        Name not Found
-        </div>
-        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#addRequesterModal">
-            Add a new requester
-        </button>
-        ';
-    }
-//closing ul tag in output variable
-    $output .= '</ul>';
-*/    
+    
+    $sql = "DELETE FROM writtenDB
+            WHERE 
+            requesterName = '".$from."' AND
+            docTitle =  '".$doc."' AND
+            symbols =  '".$symbols."' AND
+            dateStarted = '".$start."' AND
+            dateFinished =  '".$finish."' AND
+            doneBy =  '".$by."'
+            ";
+    $result = mysqli_query($database, $sql);
+    
+} else {
+    $event = $rowArray["event"];
+    $date = date('y-m-d', strtotime($rowArray["date"]));
+    $time = date('H:i',strtotime($rowArray["time"]));
+    $duration = $rowArray["duration"];  
+    
+    $sql = "DELETE FROM verbalDB
+            WHERE 
+            requesterName = '".$from."' AND
+            event =  '".$event."' AND
+            duration =  '".$duration."' AND
+            date = '".$date."' AND
+            timeStarted =  '".$time."' AND
+            doneBy =  '".$by."' LIMIT 1
+            ";
+    $result = mysqli_query($database, $sql);
+    
+}
+//splitting code by type of translation ↑
+    
     
 //returning found data back to ajax result
-    print_r($output);
-    
+    print_r($output); 
+    echo "<br> 1) type ".$translationType."<br> by ".$by."<br> from ".$from."<br>";
     
 }
 

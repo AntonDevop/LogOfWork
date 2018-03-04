@@ -329,7 +329,7 @@ if ($result->num_rows > 0) {
     
     // output data of each row
     while($row = $result->fetch_assoc()) {
-        echo "<tr class='writtenRow'  data-toggle='tooltip' data-placement='top' title='=Select this line by clicking on it if you want to delete this record'>
+        echo "<tr class='writtenRow'  data-toggle='tooltip' data-placement='top' title='Select this line by clicking on it if you want to delete this record'>
                 <td class='fromtd'>".$row["requesterName"]."</td>
                 <td class='doctd'>".$row["docTitle"]."</td>
                 <td class='symbolstd'>".number_format($row["symbols"], 0, ',', ' ')."</td>
@@ -365,7 +365,7 @@ if ($result2->num_rows > 0) {
     
     // output data of each row
     while($row = $result2->fetch_assoc()) {
-        echo "<tr class='writtenRow'  data-toggle='tooltip' data-placement='top' title='=Select this line by clicking on it if you want to delete this record'>
+        echo "<tr class='verbalRow'  data-toggle='tooltip' data-placement='top' title='Select this line by clicking on it if you want to delete this record'>
                 <td class='fromtd'>".$row["requesterName"]."</td>
                 <td class='eventtd'>".$row["event"]."</td>
                 <td class='datetd'>".date('F j, Y', strtotime($row["date"]))."</td>
@@ -385,7 +385,8 @@ if ($result2->num_rows > 0) {
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="js/jquery-3.3.1.min.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script> 
+ 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     
     <script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
@@ -728,11 +729,10 @@ var activeWeekEndForIF = activeWeekEnd.add(1, 'days');
                 data: {arrayRec:arrayRec},
                 success:function(data){
                         alert("You have deleted the record succcessfuly!");
-                    $("#ajaxShow").html(data);
+                    //$("#ajaxShow").html(data);
                     }
                 
             });
-            alert("Done!");
         });
 
     });
