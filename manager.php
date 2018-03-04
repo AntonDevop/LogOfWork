@@ -373,9 +373,9 @@ function truncateTemp(){
         
         //inserting $limit champions ↓
         
-        if($resultImport->num_rows > 0) {
+        if($resultImport->num_rows > 5) {
             $i = 0;
-            while(($i<$limit) && ($i <= $resultImport->num_rows)) {
+            while($i<$limit) {
                 $selector = $dataArray[$i]["selector"];
                 $total = $dataArray[$i]["total"];
                 $pageshours = $dataArray[$i]["pageshours"];
@@ -387,8 +387,25 @@ function truncateTemp(){
                 
                 $i++;
             }
+        } elseif($resultImport->num_rows > 0 && $resultImport->num_rows <=5) {
+            $arrayNumb = count(dataArray);
+            $i = 0;
+            while($i<$arrayNumb) {
+                $selector = $dataArray[$i]["selector"];
+                $total = $dataArray[$i]["total"];
+                $pageshours = $dataArray[$i]["pageshours"];
+                $percent = $dataArray[$i]["percent"];
+                $department = $dataArray[$i]["department"];
+                
+                $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department) VALUES ('".$selector."', '".$total."', '".$pageshours."', '".$percent."', '".$department."')";
+                $result = $database->query($sqlInsert);
+                
+                $i++;
+            }            
+        } else {
+            $arrayNumb = count(dataArray);
         }
-        }
+        
         //inserting $limit champions ↑
         
         //inserting Others row ↓
