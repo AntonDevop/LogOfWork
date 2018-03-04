@@ -368,6 +368,7 @@ function truncateTemp(){
         while ($row = $resultImport->fetch_assoc()) {
             $dataArray[] = $row;
         }
+        $arrayNumb = count($dataArray);
         //fetching all rows from temporary table into associated array ↑
                 
         
@@ -388,7 +389,7 @@ function truncateTemp(){
                 $i++;
             }
         } elseif($resultImport->num_rows > 0 && $resultImport->num_rows <=5) {
-            $arrayNumb = count(dataArray);
+            
             $i = 0;
             while($i<$arrayNumb) {
                 $selector = $dataArray[$i]["selector"];
