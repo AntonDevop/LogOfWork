@@ -159,7 +159,7 @@ include 'dbconnection.php';
                     }
                 ?>
                 <div class="dropdown">
-                <a class="nav-item nav-link  dropdown-toggle btn btn-warning mx-1 px-2" href="main.php" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Main page</a>
+                <a class="nav-item nav-link  dropdown-toggle btn btn-warning mx-1 px-2" href="main.php" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="main.php">Main page</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="main.php">Main</a>
                  <div class="dropdown-divider"></div>
@@ -663,7 +663,7 @@ var activeWeekEndForIF = activeWeekEnd.add(1, 'days');
     $.merge($(".writtenRow"), $(".verbalRow")).click(function() {
 
         //adding "Delete" button
-        if ($(this).find(".btn").length == 0) {
+        if ($(this).next(".btn").length == 0){
             //$(this).append('<button type="button" class="btn btn-danger deleteRecord">Delete</button>');
             $(this).after('<button type="button" class="btn btn-danger deleteRecord">Delete</button>');
         }

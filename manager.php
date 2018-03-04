@@ -368,7 +368,9 @@ function truncateTemp(){
         while ($row = $resultImport->fetch_assoc()) {
             $dataArray[] = $row;
         }
-        $arrayNumb = count($dataArray);
+        $recordsNo = count($dataArray);     
+        //length of array from temp table
+        
         //fetching all rows from temporary table into associated array ↑
                 
         
@@ -391,7 +393,7 @@ function truncateTemp(){
         } elseif($resultImport->num_rows > 0 && $resultImport->num_rows <=5) {
             
             $i = 0;
-            while($i<$arrayNumb) {
+            while($i<$recordsNo) {
                 $selector = $dataArray[$i]["selector"];
                 $total = $dataArray[$i]["total"];
                 $pageshours = $dataArray[$i]["pageshours"];
@@ -404,14 +406,13 @@ function truncateTemp(){
                 $i++;
             }            
         } else {
-            $arrayNumb = count(dataArray);
+            $messageEmpty = "no records done";
         }
         
         //inserting $limit champions ↑
         
         //inserting Others row ↓
-        $recordsNo = count($dataArray);     
-        //length of array from temp table
+
             
         $selectorOthers = "Others";
         
