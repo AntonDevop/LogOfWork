@@ -367,14 +367,18 @@ function truncateTemp(){
         $dataArray = [];
         while ($row = $resultImport->fetch_assoc()) {
             $dataArray[] = $row;
-        }            
+        }
+        $recordsNo = count($dataArray);     
+        //length of array from temp table
+        
         //fetching all rows from temporary table into associated array ↑
                 
         
-        //inserting $limit champions ↓            
-        if($resultImport->num_rows > 0) {
+        //inserting $limit champions ↓
+        
+        if($resultImport->num_rows > 5) {
             $i = 0;
-            while($i < $limit) {
+            while($i<$limit) {
                 $selector = $dataArray[$i]["selector"];
                 $total = $dataArray[$i]["total"];
                 $pageshours = $dataArray[$i]["pageshours"];
@@ -386,12 +390,29 @@ function truncateTemp(){
                 
                 $i++;
             }
+        } elseif($resultImport->num_rows > 0 && $resultImport->num_rows <=5) {
+            
+            $i = 0;
+            while($i<$recordsNo) {
+                $selector = $dataArray[$i]["selector"];
+                $total = $dataArray[$i]["total"];
+                $pageshours = $dataArray[$i]["pageshours"];
+                $percent = $dataArray[$i]["percent"];
+                $department = $dataArray[$i]["department"];
+                
+                $sqlInsert = "INSERT INTO report (selector, total, pageshours, percent, department) VALUES ('".$selector."', '".$total."', '".$pageshours."', '".$percent."', '".$department."')";
+                $result = $database->query($sqlInsert);
+                
+                $i++;
+            }            
+        } else {
+            $messageEmpty = "no records done";
         }
+        
         //inserting $limit champions ↑
         
         //inserting Others row ↓
-        $recordsNo = count($dataArray);     
-        //length of array from temp table
+
             
         $selectorOthers = "Others";
         

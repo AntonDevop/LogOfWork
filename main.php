@@ -69,7 +69,7 @@ include 'dbconnection.php';
 </head>
 
 <body>
-   <!-- Modal -->
+   <!-- Modal for adding new client ↓ -->
 <div class="modal fade" id="addRequesterModal" tabindex="-1" role="dialog" aria-labelledby="addRequesterModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -135,7 +135,9 @@ include 'dbconnection.php';
     </div>
   </div>
 </div>
-   <!-- Modal -->   
+   <!-- Modal for adding new client ↑ -->
+   
+   
     <div class="conrainer-fluid px-5">
     
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top mb-5 justify-content-between" id="navbarId">
@@ -157,7 +159,7 @@ include 'dbconnection.php';
                     }
                 ?>
                 <div class="dropdown">
-                <a class="nav-item nav-link  dropdown-toggle btn btn-warning mx-1 px-2" href="main.php" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Main page</a>
+                <a class="nav-item nav-link  dropdown-toggle btn btn-warning mx-1 px-2" href="main.php" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="main.php">Main page</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="main.php">Main</a>
                  <div class="dropdown-divider"></div>
@@ -305,7 +307,7 @@ include 'dbconnection.php';
         
 include 'dbconnection.php';
 
-//getting records from written
+//getting records from WRITTEN translations table
 $sql = "SELECT * FROM writtenDB WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEndShow."' AND doneBy ='".$translatorName."' ORDER BY dateFinished DESC";
 
 //(MySQLi Object-oriented)
@@ -327,12 +329,12 @@ if ($result->num_rows > 0) {
     
     // output data of each row
     while($row = $result->fetch_assoc()) {
-        echo "<tr>
-                <td>".$row["requesterName"]."</td>
-                <td>".$row["docTitle"]."</td>
-                <td>".number_format($row["symbols"], 0, ',', ' ')."</td>
-                <td>".date('F j, Y', strtotime($row["dateStarted"]))."</td>
-                <td>".date('F j, Y', strtotime($row["dateFinished"]))."</td>
+        echo "<tr class='writtenRow'  data-toggle='tooltip' data-placement='top' title='Select this line by clicking on it if you want to delete this record'>
+                <td class='fromtd'>".$row["requesterName"]."</td>
+                <td class='doctd'>".$row["docTitle"]."</td>
+                <td class='symbolstd'>".number_format($row["symbols"], 0, ',', ' ')."</td>
+                <td class='startedtd'>".date('F j, Y', strtotime($row["dateStarted"]))."</td>
+                <td class='finishedtd'>".date('F j, Y', strtotime($row["dateFinished"]))."</td>
               </tr>";
     }
     echo "</tbody></table></div>";
@@ -341,7 +343,7 @@ if ($result->num_rows > 0) {
 }
             
             
-//getting records from verbal translations table
+//getting records from VERBAL translations table
 $sql2 = "SELECT * FROM verbalDB WHERE date BETWEEN '".$weekStart."' AND '".$weekEndShow."' AND doneBy ='".$translatorName."' ORDER BY date DESC";
 
 //(MySQLi Object-oriented)
@@ -363,12 +365,12 @@ if ($result2->num_rows > 0) {
     
     // output data of each row
     while($row = $result2->fetch_assoc()) {
-        echo "<tr>
-                <td>".$row["requesterName"]."</td>
-                <td>".$row["event"]."</td>
-                <td>".date('F j, Y', strtotime($row["date"]))."</td>
-                <td>".date('H:i', strtotime($row["timeStarted"]))."</td>
-                <td>".$row["duration"]."</td>
+        echo "<tr class='verbalRow'  data-toggle='tooltip' data-placement='top' title='Select this line by clicking on it if you want to delete this record'>
+                <td class='fromtd'>".$row["requesterName"]."</td>
+                <td class='eventtd'>".$row["event"]."</td>
+                <td class='datetd'>".date('F j, Y', strtotime($row["date"]))."</td>
+                <td class='timetd'>".date('H:i', strtotime($row["timeStarted"]))."</td>
+                <td class='durationtd'>".$row["duration"]."</td>
               </tr>";
     }
     echo "</tbody></table></div>";
@@ -377,13 +379,14 @@ if ($result2->num_rows > 0) {
 }
 ?>
     </div>
-
+        <div id="ajaxShow"></div>
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="js/jquery-3.3.1.min.js"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script> 
+ 
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
     
     <script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
@@ -509,7 +512,7 @@ $(document).ready(function(){
     
     
     
-    // Limitation on active week ***********************
+    // Limitation on active week ↓ ***********************
     
 
 $( "#dateFinished" ).change(function() {
@@ -636,10 +639,109 @@ var activeWeekEndForIF = activeWeekEnd.add(1, 'days');
       }
     }
 });
-    // Limitation on active week ***********************    
+    // Limitation on active week ↑ ***********************    
     
         
-});
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // Edit a record from the rendered table ↓ ***********************    
+    
+    //hower processing ↓
+    $.merge($(".writtenRow"), $(".verbalRow")).hover(function() {
+        $(this).css("cursor", "pointer");
+        $(this).tooltip();
+    });
+    //hower processing ↑
+
+    //joint selectors for both written and verbal tables processing click ↓
+    $.merge($(".writtenRow"), $(".verbalRow")).click(function() {
+
+        //adding "Delete" button
+        if ($(this).next(".btn").length == 0){
+            //$(this).append('<button type="button" class="btn btn-danger deleteRecord">Delete</button>');
+            $(this).after('<button type="button" class="btn btn-danger deleteRecord">Delete</button>');
+        }
+
+        
+        //define which table's row clicked  
+        if ($(this).hasClass("writtenRow")) {
+
+
+            var writtenFrom = $(this).find(".fromtd").html();
+            var writtenDocument = $(this).find(".doctd").html();
+            var writtenSymbols = $(this).find(".symbolstd").html();
+            writtenSymbols = Number(writtenSymbols.replace(/\s+/g, ''));
+            var writtenStarted = $(this).find(".startedtd").html();
+            var writtenFinished = $(this).find(".finishedtd").html();
+                        
+
+        } else {
+           
+            var verbalFrom = $(this).find(".fromtd").html();
+            var verbalEvent = $(this).find(".eventtd").html();
+            var verbalDate = $(this).find(".datetd").html();
+            var verbalTime = $(this).find(".timetd").html();
+            var verbalDuration = $(this).find(".durationtd").html();            
+            
+        }
+        
+        //delete button click processing
+        $(".deleteRecord").click(function() {
+            
+            //fetching record's data to object
+            var by = "<?php echo $translatorName; ?>";
+            
+            if(writtenFrom){
+                var arrayRec = {
+                    type: "written",
+                    by: by,
+                    from: writtenFrom, 
+                    doc: writtenDocument, 
+                    symbols: writtenSymbols,
+                    start: writtenStarted,
+                    finish: writtenFinished
+                }
+            } else {
+                var arrayRec = {
+                    type: "verbal",
+                    by: by,
+                    from: verbalFrom, 
+                    event: verbalEvent, 
+                    date: verbalDate,
+                    time: verbalTime,
+                    duration: verbalDuration
+                  }
+              }
+            
+            $(this).prev().remove();
+            $(this).remove();
+            
+            $.ajax({
+                url:"deleterecord.php",
+                method:"POST",
+                data: {arrayRec:arrayRec},
+                success:function(data){
+                        alert("You have deleted the record succcessfuly!");
+                    //$("#ajaxShow").html(data);
+                    }
+                
+            });
+        });
+
+    });
+    //joint selectors for both written and verbal tables processing click ↑
+    
+    // Edit a record from the rendered table ↑ ***********************    
+    
+    
+}); //$(document).ready ends
        
 </script>
   <?php include 'footer.php'; ?>
