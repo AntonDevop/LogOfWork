@@ -199,7 +199,18 @@ include 'dbconnection.php';
                 <div class="col-md">
                     <div class="form-group">
                         <label for="company">Company</label>
-                        <input type="text" class="form-control" id="company" name="company" aria-describedby="company" placeholder="Enter parent company">
+                        <input type="text" class="form-control" id="company" name="company" aria-describedby="company" placeholder="Choose or enter a parent company" value="<?php echo $row['company']; ?>" list="suggests">
+                            <datalist id="suggests">
+                                <option value="TCO">
+                                <option value="Bolashak">
+                                <option value="Career Holdings">
+                                <option value="Fircroft">
+                                <option value="KPJV">
+                                <option value="Fuor">
+                                <option value="WorleyParsons">
+                                <option value="KGNT">
+                                <option value="KING">
+                            </datalist>                                
                     </div>
                 </div>
             </div>
