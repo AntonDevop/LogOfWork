@@ -491,6 +491,7 @@ function getInternetExplorerVersion()
         return rv;
     }
 if(getInternetExplorerVersion()!==-1){
+    //applying datepicker from jQueryUI for IE
      $( function() {
         $( "#dateStarted" ).datepicker();
       } );  
@@ -500,6 +501,11 @@ if(getInternetExplorerVersion()!==-1){
       $( function() {
         $( "#dateStartedVerbal" ).datepicker();
       } );  
+} else {
+    //applying default value(today) for date inputs of non IE browsers
+    document.getElementById('dateStarted').valueAsDate = new Date();
+    document.getElementById('dateFinished').valueAsDate = new Date();
+    document.getElementById('dateStartedVerbal').valueAsDate = new Date();
 }
       
 $(document).ready(function(){
