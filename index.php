@@ -301,9 +301,22 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div id="footerwrap">
 <div class="conrainer-fluid" id="footer">
-   <div class="row justify-content-center">
+  
+    <div class="row justify-content-center">
+      <blockquote class="blockquote text-center">
+        <p class="mb-0">
+        - You know, they call me the Log of Work. <br>
+        - Ahh. It’s not Log of Work. It’s Worklog! <br>
+        - Thank you, but I prefer it my way ☺        
+        </p>
+        <footer class="blockquote-footer"><cite title="Source Title"><a href="#" onClick="MyWindow=window.open('https://www.youtube.com/embed/S7pGs7JU7eM?rel=0&amp;controls=0&amp;start=12;','MyWindow',width=854,height=480); return false;">The Log of Work</a></cite></footer>
+       </blockquote>
+    </div>
+    
+    <div class="row justify-content-center mt-5 pt-5">
        <p class="text-muted">Developed by <a href="https://antondevop.com" target="_blank">AntonDevop</a></p>
-   </div>  
+    </div>    
+   
 </div>
 </div>
     

@@ -23,7 +23,7 @@ if(isset($_POST["export"])) {
     $result = mysqli_query($database, $sql);
     if(mysqli_num_rows($result) > 0) {
         $sheet->setCellValue('A1', 'Selector');
-        $sheet->setCellValue('B1', 'Total');
+        $sheet->setCellValue('B1', 'Symbols or minutes');
         $sheet->setCellValue('C1', 'Pages or hours');
         $sheet->setCellValue('D1', 'Percent');
         $sheet->setCellValue('E1', 'Department');

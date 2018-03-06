@@ -244,11 +244,11 @@ include 'dbconnection.php';
                 <div class="form-row">
                   <div class="col-sm-3 offset-sm-3">
                     <label for="dateStarted">Date started</label>
-                    <input type="date" class="form-control written" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01">
+                    <input type="date" class="form-control written" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
                   </div>
                   <div class="col-sm-3">
                     <label for="dateFinished">Date finished</label>
-                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01">
+                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
                   </div>
                 </div>
                 
@@ -274,7 +274,7 @@ include 'dbconnection.php';
                 <div class="form-row">
                     <div class="col-sm-3 offset-sm-2">
                         <label for="date">Date</label>
-                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date">
+                        <input type="date" class="form-control verbal" id="dateStartedVerbal" name="date" value="<?php echo date('d M Y'); ?>">
                     </div>
 
                     <div class="col-sm-3">
@@ -468,7 +468,7 @@ if ($result2->num_rows > 0) {
 <!-- Checking is brawser IE and conditional applying datapicker -->  
   <script>   
       $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
+  $('[data-toggle="tooltip"]').tooltip();
 });
       
 function getInternetExplorerVersion()
@@ -491,6 +491,7 @@ function getInternetExplorerVersion()
         return rv;
     }
 if(getInternetExplorerVersion()!==-1){
+    //applying datepicker from jQueryUI for IE
      $( function() {
         $( "#dateStarted" ).datepicker();
       } );  
@@ -500,6 +501,11 @@ if(getInternetExplorerVersion()!==-1){
       $( function() {
         $( "#dateStartedVerbal" ).datepicker();
       } );  
+} else {
+    //applying default value(today) for date inputs of non IE browsers
+    document.getElementById('dateStarted').valueAsDate = new Date();
+    document.getElementById('dateFinished').valueAsDate = new Date();
+    document.getElementById('dateStartedVerbal').valueAsDate = new Date();
 }
       
 $(document).ready(function(){

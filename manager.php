@@ -167,7 +167,7 @@ if ($result->num_rows > 0) {
           </tr>
             </tbody></table>";
 } else {
-    echo "So far no written translations done this week<hr>";
+    echo "<h3 class='text-center my-2'>So far no written translations done this week<hr></h3>";
 }
             
             
@@ -222,7 +222,7 @@ if ($result2->num_rows > 0) {
             </tbody></table>";
     echo "</tbody></table>";
 } else {
-    echo "So far no verbal translations this week";
+    echo "<h3 class='text-center my-2'>So far no verbal translations this week<hr></h3>";
 }
 
             
