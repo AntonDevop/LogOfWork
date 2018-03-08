@@ -104,11 +104,282 @@ include 'dbconnection.php';
 
                 <div class="control-group">
                     <div class="controls">
-                        <button type="submit" id="export" name="export" class="btn btn-warning my-5">Export to Excel File</button>
+                        <button type="submit" id="export" name="export" class="btn btn-warning my-3">Export to Excel File</button>
                     </div>
                 </div>
             </form>
        </div>
+       
+       <!-- ******************************* -->
+       <!-- Container for custom report ↓ -->	
+        <div class="container">
+            <div class="row justify-content-center">
+                <a class="btn btn-info" data-toggle="collapse" href="#customReport" role="button" aria-expanded="false" aria-controls="editProfile" id="customReportButton">Custom report to Excel</a>
+            </div>
+
+            <!-- Collapsible area for a custom report option ↓ -->
+            <div class="collapse row justify-content-center formbackground" id="customReport">
+
+                <div class="row justify-content-center">
+                    <h3>Please select what you want to include in a custom report</h3>
+                </div>
+
+                <form action="customreport.php" method="post" name="export_custom">
+
+                    <!-- Checkboxes for types of translation ↓ -->
+                    <div class="row justify-content-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="writtenType" id="inlineCheckbox1" value="written" checked data-toggle="collapse" data-target="#symbolsWrapper" aria-expanded="false" aria-controls="symbolsWrapper">
+                            <label class="form-check-label typecheck" for="inlineCheckbox1">Written</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="verbalType" id="inlineCheckbox2" value="verbal" checked data-toggle="collapse" data-target="#durationWrapper" aria-expanded="false" aria-controls="durationWrapper">
+                            <label class="form-check-label typecheck" for="inlineCheckbox2">Verbal</label>
+                        </div>
+                    </div>
+                    <!-- Checkboxes for types of translation ↑ -->
+
+                    <!-- Checkbox for dates ↓ -->
+                    <div class="row justify-content-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="dates" id="datesCheckbox" value="datesAll" checked data-toggle="collapse" data-target="#collapsibleDates" aria-expanded="false" aria-controls="collapsibleDates" onclick="customDatesRequired();">
+                            <label class="form-check-label typecheck" for="datesCheckbox">
+                            Project to date 
+                            <small class="text-secondary">(Uncheck to specify exact period)</small>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Checkbox for dates ↑ -->
+
+                    <!-- Collapsible for date pickers ↓  -->
+                    <div class="collapse" id="collapsibleDates">
+                        <div class="row justify-content-center">
+
+                            <div class="form-row">
+                                <div class="col-sm">
+                                    <label for="dateStarted">
+                                    Date started
+                                    </label>
+                                    <input type="date" class="form-control written" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
+                                </div>
+                                <div class="col-sm">
+                                    <label for="dateFinished">
+                                    Date finished
+                                    </label>
+                                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Collapsible for date pickers ↑  -->
+
+
+                    <!-- Checkbox for department ↓ -->
+                    <div class="row justify-content-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="departments" id="departmentCheckbox" value="datesAll" checked data-toggle="collapse" data-target="#collapsibleDepartment" aria-expanded="false" aria-controls="collapsibleDepartment">
+                            <label class="form-check-label typecheck" for="departmentCheckbox">
+                            All departments 
+                            <small class="text-secondary">(Uncheck to specify exact department(s))</small>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Checkbox for department ↑ -->
+
+                    <!-- Collapsible for department ↓  -->
+                    <div class="collapse" id="collapsibleDepartment">
+                        <div class="checkboxesScrollable">
+                        <?php 
+                        $sql = "SELECT DISTINCT `Department` FROM `clients`";
+                        $result = $database->query($sql);
+
+                        //fetching all rows from clients table into associated array ↓
+                        $departmentsArray = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $departmentsArray[] = $row;
+                        }
+                        $recordsNo = count($departmentsArray);
+                        //length of array from clients table
+
+                        $listOfDepartments;
+                        $counter = 0;
+                        $number = 1;
+                        while ($counter < $recordsNo){
+                            $listOfDepartments += '
+                                <!-- '.$number.'/'.$recordsNo.' row of departments ↓ -->
+                                <div class="row justify-content-start">
+
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="'.$departmentsArray[$counter].'" id="departmentCheck'.$number.'">
+                                        <label class="form-check-label" for="departmentCheck'.$number.'">
+                                             '.$departmentsArray[$counter].'
+                                          </label>
+                                    </div>
+
+                                </div>
+                                <!-- '.$number.'/'.$recordsNo.' row of departments ↑ -->                                                  
+                            ';
+                            $counter++;
+                            $number++;
+                        }
+
+                        echo $listOfDepartments;
+
+                        ?>                        
+
+                        </div>
+                    </div>
+                    <!-- Collapsible for department ↑  -->
+
+                   
+                    <!-- Checkbox for translators ↓ -->
+                    <div class="row justify-content-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="translators" id="translatorCheckbox" value="translatorsAll" checked data-toggle="collapse" data-target="#collapsibleTranslators" aria-expanded="false" aria-controls="collapsibleTranslators">
+                            <label class="form-check-label typecheck" for="translatorCheckbox">
+                            All translators 
+                            <small class="text-secondary">(Uncheck to specify exact translator(s))</small>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Checkbox for translators ↑ -->
+                    
+                    <!-- Collapsible for translators ↓  -->
+                    <div class="collapse" id="collapsibleTranslators">
+                        <div class="row justify-content-center">
+                            <div class="checkboxesScrollable">
+                                
+                                <?php 
+                                $sql = "SELECT name FROM usersTable";
+                                $result = $database->query($sql);
+
+                                //fetching all rows from users table into associated array ↓
+                                $translatorsArray = [];
+                                while ($row = $result->fetch_assoc()) {
+                                    $translatorsArray[] = $row;
+                                }
+                                $recordsNo = count($translatorsArray);
+                                //length of array from users table
+                                
+                                $listOfTranslators;
+                                $counter = 0;
+                                while ($counter < $recordsNo){
+                                    $listOfTranslators += '
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="'.$translatorsArray[$counter].'" id="translatorsCheck'.$counter.'">
+                                            <label class="form-check-label" for="translatorsCheck'.$counter.'">
+                                                 '.$translatorsArray[$counter].'
+                                            </label>
+                                        </div>                                    
+                                    ';
+                                    $counter++;
+                                }
+                                
+                                echo $listOfTranslators;
+                                
+                                ?>
+                                                              
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Collapsible for translators ↑  -->                    
+                    
+                    
+                    <!-- Wrapper for symbols appears after written is checked ↓ -->
+                    <div class="collapse" id="symbolsWrapper">
+                    <!-- Checkbox for symbols ↓ -->
+                    <div class="row justify-content-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="symbolsCheckbox" id="symbolsCheckbox" value="symbolsAll" checked data-toggle="collapse" data-target="#collapsibleSymbols" aria-expanded="false" aria-controls="collapsibleSymbols">
+                            <label class="form-check-label typecheck" for="symbolsCheckbox">
+                            All range of symbols 
+                            <small class="text-secondary">(Uncheck to specify exact range of symbols2)</small>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Checkbox for symbols ↑ -->
+                    </div>
+                    <!-- Wrapper for symbols appears after written is checked ↑ -->
+
+                    <!-- Collapsible for symbols picker ↓  -->
+                    <div class="collapse" id="collapsibleSymbols">
+                        <div class="row justify-content-center">
+
+                            <div class="form-row">
+                                <div class="col-sm">
+                                    <label for="symbolsFrom">
+                                    Symbols from
+                                    </label>
+                                    <input type="number" class="form-control written" id="symbolsFrom" name="symbolsFrom" >
+                                </div>
+                                <div class="col-sm">
+                                    <label for="symbolsTo">
+                                    Symbols to
+                                    </label>
+                                    <input type="number" class="form-control written" id="symbolsTo" name="symbolsTo">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Collapsible for symbols picker ↑  -->
+                                                         
+
+                    <!-- Wrapper for duration appears after verbal is checked ↓ -->
+                    <div class="collapse" id="durationWrapper">
+                    <!-- Checkbox for duration ↓ -->
+                    <div class="row justify-content-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="durationCheckbox" id="durationCheckbox" value="durationAll" checked data-toggle="collapse" data-target="#collapsibleDuration" aria-expanded="false" aria-controls="collapsibleDuration">
+                            <label class="form-check-label typecheck" for="durationCheckbox">
+                            All range of duration for verbal translations
+                            <small class="text-secondary">(Uncheck to specify exact range of duration)</small>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Checkbox for duration ↑ -->
+                    </div>
+                    <!-- Wrapper for duration appears after verbal is checked ↑ -->
+
+                    <!-- Collapsible for duration picker ↓  -->
+                    <div class="collapse" id="collapsibleDuration">
+                        <div class="row justify-content-center">
+
+                            <div class="form-row">
+                                <div class="col-sm">
+                                    <label for="durationFrom">
+                                    Symbols from
+                                    </label>
+                                    <input type="number" class="form-control written" id="durationFrom" name="durationFrom" >
+                                </div>
+                                <div class="col-sm">
+                                    <label for="durationTo">
+                                    Symbols to
+                                    </label>
+                                    <input type="number" class="form-control written" id="durationTo" name="durationTo">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Collapsible for duration picker ↑  -->                                                                                                                    
+                                                          
+                                                                                                
+                    <div class="control-group">
+
+                    </div>
+
+                </form>
+            </div>
+            </div>
+            <!-- Collapsible area for a custom report option ↑ -->
+        </div> 
+<!-- Container for custom report ↑ -->
+
+       <!-- ******************************* -->
        </div>
         <div class="container-fluid mx-1" id="reportSection">
 <?php
@@ -893,6 +1164,7 @@ if($resultDeptSum->num_rows > 0) {
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>   
+    <script src="js/jquery-ui-1.12.1/jquery-ui.min.js"></script>
     
     <script>
 $(document).ready(function(){
@@ -901,7 +1173,44 @@ $(document).ready(function(){
       $("#afterNav").css("marginTop", navHeight);    
     //Setting body padding-bottom equals to footer height
         var footerHeight = $("#footerwrap").outerHeight();
-        $("body").css("padding-bottom", footerHeight);    
+        $("body").css("padding-bottom", footerHeight);   
+    
+
+    
+function getInternetExplorerVersion()
+    {
+        var rv = -1;
+        if (navigator.appName == 'Microsoft Internet Explorer')
+        {
+            var ua = navigator.userAgent;
+            var re  = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+            if (re.exec(ua) != null)
+                rv = parseFloat( RegExp.$1 );
+        }
+        else if (navigator.appName == 'Netscape')
+        {
+            var ua = navigator.userAgent;
+            var re  = new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})");
+            if (re.exec(ua) != null)
+                rv = parseFloat( RegExp.$1 );
+        }
+        return rv;
+    }
+if(getInternetExplorerVersion()!==-1){
+    //applying datepicker from jQueryUI for IE
+     $( function() {
+        $( "#dateStarted" ).datepicker();
+      } );  
+      $( function() {
+        $( "#dateFinished" ).datepicker();
+      } ); 	
+} else {	
+    //applying default value(today) for date inputs of non IE browsers
+    document.getElementById('dateStarted').valueAsDate = new Date();
+    document.getElementById('dateFinished').valueAsDate = new Date();
+}
+    
+    
 });
     </script>
     <?php include 'footer.php'; ?>

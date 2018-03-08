@@ -89,3 +89,9 @@ body {
                 -1px 1px 0 #000,
                 1px 1px 0 #000;
         }
+.checkboxesScrollable {
+    height: 200px;
+    width: 500px;
+    overflow-y: scroll;
+      overflow-x: hidden;
+}
