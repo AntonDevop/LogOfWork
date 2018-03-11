@@ -142,9 +142,9 @@ include 'dbconnection.php';
                     <!-- Checkbox for dates ↓ -->
                     <div class="row justify-content-center">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="dates" id="datesCheckbox" value="datesAll" checked data-toggle="collapse" data-target="#collapsibleDates" aria-expanded="false" aria-controls="collapsibleDates" onclick="customDatesRequired();">
+                            <input class="form-check-input" type="checkbox" name="allDates" id="datesCheckbox" value="datesAll" checked data-toggle="collapse" data-target="#collapsibleDates" aria-expanded="false" aria-controls="collapsibleDates" onclick="customDatesRequired();">
                             <label class="form-check-label typecheck" for="datesCheckbox">
-                            Project to date 
+                            All dates
                             <small class="text-secondary">(Uncheck to specify exact period)</small>
                             </label>
                         </div>
@@ -160,13 +160,13 @@ include 'dbconnection.php';
                                     <label for="dateStarted">
                                     Date started
                                     </label>
-                                    <input type="date" class="form-control written" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
+                                    <input type="date" class="form-control" id="dateStarted" name="dateStarted" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
                                 </div>
                                 <div class="col-sm">
                                     <label for="dateFinished">
                                     Date finished
                                     </label>
-                                    <input type="date" class="form-control written" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
+                                    <input type="date" class="form-control" id="dateFinished" name="dateFinished" min="2018-01-01" max="2030-01-01" value="<?php echo date('d M Y'); ?>">
                                 </div>
                             </div>
 
@@ -178,7 +178,7 @@ include 'dbconnection.php';
                     <!-- Checkbox for department ↓ -->
                     <div class="row justify-content-center">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="departments" id="departmentCheckbox" value="datesAll" checked data-toggle="collapse" data-target="#collapsibleDepartment" aria-expanded="false" aria-controls="collapsibleDepartment">
+                            <input class="form-check-input" type="checkbox" name="allDepartments" id="departmentCheckbox" value="datesAll" checked data-toggle="collapse" data-target="#collapsibleDepartment" aria-expanded="false" aria-controls="collapsibleDepartment">
                             <label class="form-check-label typecheck" for="departmentCheckbox">
                             All departments 
                             <small class="text-secondary">(Uncheck to specify exact department(s))</small>
@@ -199,26 +199,27 @@ include 'dbconnection.php';
                         while ($row = $result->fetch_assoc()) {
                             $departmentsArray[] = $row;
                         }
-                        $recordsNo = count($departmentsArray);
+                        $numberofDepartments = count($departmentsArray);
                         //length of array from clients table
 
                         $listOfDepartments;
                         $counter = 0;
                         $number = 1;
-                        while ($counter < $recordsNo){
+                        while ($counter < $numberofDepartments){
                             $listOfDepartments += '
-                                <!-- '.$number.'/'.$recordsNo.' row of departments ↓ -->
+                                <!-- '.$number.'/'.$numberofDepartments.' row of departments ↓ -->
                                 <div class="row justify-content-start">
 
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="'.$departmentsArray[$counter].'" id="departmentCheck'.$number.'">
+                                        <input class="form-check-input" type="checkbox" value="'.$departmentsArray[$counter].'" name="departmentCheck'.$number.'"
+                                        id="departmentCheck'.$number.'">
                                         <label class="form-check-label" for="departmentCheck'.$number.'">
                                              '.$departmentsArray[$counter].'
                                           </label>
                                     </div>
 
                                 </div>
-                                <!-- '.$number.'/'.$recordsNo.' row of departments ↑ -->                                                  
+                                <!-- '.$number.'/'.$numberofDepartments.' row of departments ↑ -->                                                  
                             ';
                             $counter++;
                             $number++;
@@ -227,7 +228,7 @@ include 'dbconnection.php';
                         echo $listOfDepartments;
 
                         ?>                        
-
+                        <input type="hidden" name="numberofDepartments" value="<?php echo $numberofDepartments; ?>">
                         </div>
                     </div>
                     <!-- Collapsible for department ↑  -->
@@ -236,7 +237,7 @@ include 'dbconnection.php';
                     <!-- Checkbox for translators ↓ -->
                     <div class="row justify-content-center">
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="translators" id="translatorCheckbox" value="translatorsAll" checked data-toggle="collapse" data-target="#collapsibleTranslators" aria-expanded="false" aria-controls="collapsibleTranslators">
+                            <input class="form-check-input" type="checkbox" name="allTranslators" id="translatorCheckbox" value="translatorsAll" checked data-toggle="collapse" data-target="#collapsibleTranslators" aria-expanded="false" aria-controls="collapsibleTranslators">
                             <label class="form-check-label typecheck" for="translatorCheckbox">
                             All translators 
                             <small class="text-secondary">(Uncheck to specify exact translator(s))</small>
@@ -259,15 +260,16 @@ include 'dbconnection.php';
                                 while ($row = $result->fetch_assoc()) {
                                     $translatorsArray[] = $row;
                                 }
-                                $recordsNo = count($translatorsArray);
+                                $numberOfTranslators = count($translatorsArray);
                                 //length of array from users table
                                 
                                 $listOfTranslators;
                                 $counter = 0;
-                                while ($counter < $recordsNo){
+                                while ($counter < $numberOfTranslators){
                                     $listOfTranslators += '
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="'.$translatorsArray[$counter].'" id="translatorsCheck'.$counter.'">
+                                            <input class="form-check-input" type="checkbox" value="'.$translatorsArray[$counter].'" name="translatorCheck'.$counter.'"
+                                            id="translatorsCheck'.$counter.'">
                                             <label class="form-check-label" for="translatorsCheck'.$counter.'">
                                                  '.$translatorsArray[$counter].'
                                             </label>
@@ -279,7 +281,8 @@ include 'dbconnection.php';
                                 echo $listOfTranslators;
                                 
                                 ?>
-                                                              
+                                
+                                <input type="hidden" name="numberOfTranslators" value="<?php echo $numberOfTranslators; ?>">                                                              
                                 
                             </div>
 
@@ -289,7 +292,7 @@ include 'dbconnection.php';
                     
                     
                     <!-- Wrapper for symbols appears after written is checked ↓ -->
-                    <div class="collapse" id="symbolsWrapper">
+                    <div class="collapse show" id="symbolsWrapper">
                     <!-- Checkbox for symbols ↓ -->
                     <div class="row justify-content-center">
                         <div class="form-check form-check-inline">
@@ -313,13 +316,13 @@ include 'dbconnection.php';
                                     <label for="symbolsFrom">
                                     Symbols from
                                     </label>
-                                    <input type="number" class="form-control written" id="symbolsFrom" name="symbolsFrom" >
+                                    <input type="number" class="form-control" id="symbolsFrom" name="symbolsFrom" value="0">
                                 </div>
                                 <div class="col-sm">
                                     <label for="symbolsTo">
                                     Symbols to
                                     </label>
-                                    <input type="number" class="form-control written" id="symbolsTo" name="symbolsTo">
+                                    <input type="number" class="form-control" id="symbolsTo" name="symbolsTo" value="50000">
                                 </div>
                             </div>
 
@@ -329,7 +332,7 @@ include 'dbconnection.php';
                                                          
 
                     <!-- Wrapper for duration appears after verbal is checked ↓ -->
-                    <div class="collapse" id="durationWrapper">
+                    <div class="collapse show" id="durationWrapper">
                     <!-- Checkbox for duration ↓ -->
                     <div class="row justify-content-center">
                         <div class="form-check form-check-inline">
@@ -351,27 +354,26 @@ include 'dbconnection.php';
                             <div class="form-row">
                                 <div class="col-sm">
                                     <label for="durationFrom">
-                                    Symbols from
+                                    Minutes from
                                     </label>
-                                    <input type="number" class="form-control written" id="durationFrom" name="durationFrom" >
+                                    <input type="number" class="form-control" id="durationFrom" name="durationFrom" value="0">
                                 </div>
                                 <div class="col-sm">
                                     <label for="durationTo">
-                                    Symbols to
+                                    Minutes to
                                     </label>
-                                    <input type="number" class="form-control written" id="durationTo" name="durationTo">
+                                    <input type="number" class="form-control" id="durationTo" name="durationTo" value="720">
                                 </div>
                             </div>
 
                         </div>
                     </div>
-                    <!-- Collapsible for duration picker ↑  -->                                                                                                                    
-                                                          
-                                                                                                
-                    <div class="control-group">
-
+                    <!-- Collapsible for duration picker ↑  -->
+                    
+                    <div class="row justify-content-center">
+                    <button type="submit" id="customExport" name="customExport" class="btn btn-success my-3">Save to Excel File</button>
                     </div>
-
+                                                                                                                         
                 </form>
             </div>
             </div>
@@ -380,7 +382,8 @@ include 'dbconnection.php';
 <!-- Container for custom report ↑ -->
 
        <!-- ******************************* -->
-       </div>
+<!--       </div> -->
+
         <div class="container-fluid mx-1" id="reportSection">
 <?php
 $totalSymbols = "";
