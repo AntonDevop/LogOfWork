@@ -7,7 +7,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-if(isset($_POST["customExport"])){
+
+if(isset($_POST["customExportButton"])){
     /** Create a new Spreadsheet Object **/
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
@@ -19,7 +20,7 @@ if(isset($_POST["customExport"])){
 /* 1.0 Parameters section processing ↓ */
     /* 1.1 Dates selection ↓ */
     if(isset($_POST["allDates"])){
-        $startDate = "2018-03-01";
+        $startDate = "2018-01-01";
         $startDate = date('Y-m-d',strtotime($startDate));
         $finishDate = date('Y-m-d');
     } else {
@@ -37,9 +38,11 @@ if(isset($_POST["customExport"])){
         $i = 0;
         $number = 1;
         while ($i < $numberOfDepartments){
-            if(isset($_POST["numberofDepartments".$number.""])){
-                $departmentsArray[] = $_POST["numberofDepartments".$number.""];                
+            if(isset($_POST["departmentCheck".$number.""])){
+                $departmentsArray[] = $_POST["departmentCheck".$number.""];
             }
+            $i++;
+            $number++;
         }
     }
     /* 1.2 Departments selection ↑ */
@@ -53,8 +56,9 @@ if(isset($_POST["customExport"])){
         $i = 0;
         while ($i < $numberOfTranslators){
             if(isset($_POST["translatorCheck".$i.""])){
-                $translatorsArray[] = $_POST["translatorCheck".$i.""];                
+                $translatorsArray[] = $_POST["translatorCheck".$i.""];
             }
+            $i++;
         }
     }
     /* 1.3 Translators selection ↑ */
@@ -74,8 +78,8 @@ if(isset($_POST["customExport"])){
     /* 1.5 Duration selection ↓ */
     if($verbal){
         if(isset($_POST["durationCheckbox"])){
-            $symbolsFrom = 0;
-            $symbolsTo = 720;    
+            $durationFrom = 0;
+            $durationTo = 720;    
         } else {
             $durationFrom = $_POST["durationFrom"];
             $durationTo = $_POST["durationTo"];
@@ -84,8 +88,6 @@ if(isset($_POST["customExport"])){
     /* 1.5 Duration selection ↑ */
             
 /* 1.0 Parameters section processing ↑ */   
-    
-    
     
 /* 2.0 Written section processing ↓ */
     if($written){
@@ -103,38 +105,80 @@ if(isset($_POST["customExport"])){
             FROM `writtenDB` 
             WHERE `dateFinished` BETWEEN '".$startDate."' AND '".$finishDate."'
                 AND `symbols` BETWEEN '".$symbolsFrom."' AND '".$symbolsTo."'
-                AND `requesterDepartment` IN ('".$$departmentsArray."') 
             GROUP BY requesterDepartment";
         }
         
         $resultsqlDept = mysqli_query($database, $sqlDept);
         
+        //fetching data from DB into intermediate array
         if($resultsqlDept->num_rows > 0) {
-            $writtenDeptArray = [];
             while($row = $resultsqlDept->fetch_assoc()) {
-                $writtenDeptArray[] = array("requesterDepartment"=>$row["requesterDepartment"],"symbols"=>$row["SUM(symbols)"],
-                                           );
+                $writtenInterDeptArray[] = array("requesterDepartment"=>$row["requesterDepartment"],"symbols"=>$row["SUM(symbols)"]);
             }
         }
+        
+        //fetching data to filtered array
+        if($departmentsArray == "all"){
+            $writtenArrayFiltered = $writtenInterDeptArray;
+        } else {
+            $lengthOfWrittenArray = count($writtenInterDeptArray);
+            $i = 0;
+            $writtenArrayFiltered = [];
+            while($i < $lengthOfWrittenArray){
+                if(in_array($writtenInterDeptArray[$i]["requesterDepartment"], $departmentsArray)){
+                    $writtenArrayFiltered[] = $writtenInterDeptArray[$i];
+                }
+                $i++;
+            }
+        }
+
+        //sorting 2D array by "symbols" column
+        array_multisort (array_column($writtenArrayFiltered, 'symbols'), SORT_DESC, $writtenArrayFiltered);
+
+        print_r($writtenArrayFiltered);
+    }
+}
 
         /* 2.1.1 Fetching writtenDB to array  ↑ */
         
         /* 2.1.2 Enter data from array to spreadsheet  ↓ */
+        // Create a new worksheet called "Written by departments"
+         $writtenDept = new \PhpOffice\PhpSpreadsheet\Worksheet($spreadsheet, 'Written by departments');
         
+        // Attach the "Written by departments" worksheet as the first worksheet in the Spreadsheet object
+        $spreadsheet->addSheet($writtenDept, 0);
+        
+        //removing temporary created worksheet
+        $spreadsheet->removeSheetByIndex(1);
+        
+        $spreadsheet->getSheet(0);
+        
+        $columnA = "A";
+        $columnB = "B";
+        $columnC = "C";
+        $columnD = "D";
+        
+        //naming Headers for spreadsheet
+        $sheet->setCellValue('A1', 'Written translations by Departments');
+        $sheet->setCellValue('B1', 'Symbols');
+        $sheet->setCellValue('C1', 'Pages');
+        $sheet->setCellValue('D1', 'Percent');
+        
+                
         
         /* 2.1.2 Enter data from array to spreadsheet  ↑ */                
     /* 2.1 Written by department ↑ */
 
     /* 2.2 Written by name ↓ */
         /* 2.1.1 Fetching writtenDB to  ↓ */
-        $sqlDept = "SELECT SUM(symbols), requesterDepartment 
+/*        $sqlDept = "SELECT SUM(symbols), requesterDepartment 
                     FROM `writtenDB` 
                     WHERE dateFinished BETWEEN '".$weekStart."' AND '".$weekEnd."' GROUP BY requesterDepartment";
         /* 2.1.1 Fetching writtenDB to  ↑ */
         
         /* 2.1.2 Enter data from array to spreadsheet  ↓ */
         // Create a new worksheet called "Written by departments"
-        $writtenDept = new \PhpOffice\PhpSpreadsheet\Worksheet($spreadsheet, 'Written by departments');
+/*        $writtenDept = new \PhpOffice\PhpSpreadsheet\Worksheet($spreadsheet, 'Written by departments');
         
         // Attach the "My Data" worksheet as the first worksheet in the Spreadsheet object
         $spreadsheet->addSheet($writtenDept, 0);
@@ -150,22 +194,22 @@ if(isset($_POST["customExport"])){
         $columnD = "D";
         
         //naming Headers for spreadsheet
-        $sheet->setCellValue('A1', 'Selector');
-        $sheet->setCellValue('B1', 'Symbols or minutes');
-        $sheet->setCellValue('C1', 'Pages or hours');
-        $sheet->setCellValue('D1', 'Percent');        
+        $sheet->setCellValue('A1', 'Written translations by Names');
+        $sheet->setCellValue('B1', 'Symbols');
+        $sheet->setCellValue('C1', 'Pages');
+        $sheet->setCellValue('D1', 'Percent');
         
         
-        
+      */  
         /* 2.1.2 Enter data from array to spreadsheet  ↑ */  
     /* 2.2 Written by name ↑ */
-    }
+//    }
 /* 2.0 Written section processing ↑ */
 
 
 
 /* 3.0 Verbal section processing ↓ */
-    if($verbal){
+//    if($verbal){
     /* 3.1 Verbal by department ↓ */
     
     /* 3.1 Verbal by department ↑ */
@@ -174,7 +218,7 @@ if(isset($_POST["customExport"])){
 
     /* 3.2 Verbal by name ↑ */
 
-    }
+//    }
 /* 3.0 Verbal section processing ↑ */
 
 
@@ -191,8 +235,8 @@ if(isset($_POST["customExport"])){
 
 /* 4.0 Translators section processing ↑ */
 
-}
-
+//}
+/*
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 
@@ -314,8 +358,8 @@ if(isset($_POST["export"])) {
         $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
         $spreadsheet->getActiveSheet()->getStyle('D')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         */
-    }
-
+//    }
+/*
 $weekNumber = gmdate('W');
 $yearNumber = gmdate('Y');
 // Redirect output to a client’s web browser (Xls)
@@ -336,4 +380,5 @@ $writer->save('php://output');
 exit;
     
 }
+*/
 ?>

@@ -189,47 +189,50 @@ include 'dbconnection.php';
 
                     <!-- Collapsible for department ↓  -->
                     <div class="collapse" id="collapsibleDepartment">
-                        <div class="checkboxesScrollable">
-                        <?php 
-                        $sql = "SELECT DISTINCT `Department` FROM `clients`";
-                        $result = $database->query($sql);
+                        <div class="row justify-content-center">  
+                            <div class="checkboxesScrollable">
+                            <?php 
+                            $sql = "SELECT DISTINCT `Department` FROM `clients`";
+                            $result = $database->query($sql);
 
-                        //fetching all rows from clients table into associated array ↓
-                        $departmentsArray = [];
-                        while ($row = $result->fetch_assoc()) {
-                            $departmentsArray[] = $row;
-                        }
-                        $numberofDepartments = count($departmentsArray);
-                        //length of array from clients table
+                            //fetching all rows from clients table into associated array ↓
+                            $departmentsArray = [];
+                            while ($row = $result->fetch_assoc()) {
+                                $departmentsArray[] = $row;
+                            }
+                            $numberofDepartments = count($departmentsArray);
+                            //length of array from clients table
 
-                        $listOfDepartments;
-                        $counter = 0;
-                        $number = 1;
-                        while ($counter < $numberofDepartments){
-                            $listOfDepartments += '
-                                <!-- '.$number.'/'.$numberofDepartments.' row of departments ↓ -->
-                                <div class="row justify-content-start">
-
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="'.$departmentsArray[$counter].'" name="departmentCheck'.$number.'"
-                                        id="departmentCheck'.$number.'">
-                                        <label class="form-check-label" for="departmentCheck'.$number.'">
-                                             '.$departmentsArray[$counter].'
-                                          </label>
+                            $listOfDepartments = '';
+                            $counter = 0;
+                            $number = 1;
+               
+                            while ($counter < $numberofDepartments){
+                                $listOfDepartments .= '
+                                    <!-- '.$number.'/'.$numberofDepartments.' row of departments ↓ -->
+                                    <div class="row justify-content-start">
+                                                                                
+                                        <div class="form-check px-5">
+                                            <input class="form-check-input" type="checkbox" value="'.$departmentsArray[$counter]["Department"].'" name="departmentCheck'.$number.'"
+                                            id="departmentCheck'.$number.'">
+                                            <label class="form-check-label" for="departmentCheck'.$number.'">
+                                                 '.$departmentsArray[$counter]["Department"].'
+                                              </label>
+                                        </div>
+                                        
                                     </div>
+                                    <!-- '.$number.'/'.$numberofDepartments.' row of departments ↑ -->                                                  
+                                ';
+                                $counter++;
+                                $number++;
+                            }
 
-                                </div>
-                                <!-- '.$number.'/'.$numberofDepartments.' row of departments ↑ -->                                                  
-                            ';
-                            $counter++;
-                            $number++;
-                        }
+                            echo $listOfDepartments;
 
-                        echo $listOfDepartments;
-
-                        ?>                        
-                        <input type="hidden" name="numberofDepartments" value="<?php echo $numberofDepartments; ?>">
-                        </div>
+                            ?>                        
+                            <input type="hidden" name="numberofDepartments" value="<?php echo $numberofDepartments; ?>">
+                            </div>
+                        </div>    
                     </div>
                     <!-- Collapsible for department ↑  -->
 
@@ -252,7 +255,7 @@ include 'dbconnection.php';
                             <div class="checkboxesScrollable">
                                 
                                 <?php 
-                                $sql = "SELECT name FROM usersTable";
+                                $sql = "SELECT `name` FROM `usersTable`";
                                 $result = $database->query($sql);
 
                                 //fetching all rows from users table into associated array ↓
@@ -263,15 +266,15 @@ include 'dbconnection.php';
                                 $numberOfTranslators = count($translatorsArray);
                                 //length of array from users table
                                 
-                                $listOfTranslators;
+                                $listOfTranslators = '';
                                 $counter = 0;
                                 while ($counter < $numberOfTranslators){
-                                    $listOfTranslators += '
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="'.$translatorsArray[$counter].'" name="translatorCheck'.$counter.'"
+                                    $listOfTranslators .= '
+                                        <div class="form-check px-5">
+                                            <input class="form-check-input" type="checkbox" value="'.$translatorsArray[$counter]["name"].'" name="translatorCheck'.$counter.'"
                                             id="translatorsCheck'.$counter.'">
                                             <label class="form-check-label" for="translatorsCheck'.$counter.'">
-                                                 '.$translatorsArray[$counter].'
+                                                 '.$translatorsArray[$counter]["name"].'
                                             </label>
                                         </div>                                    
                                     ';
@@ -371,7 +374,7 @@ include 'dbconnection.php';
                     <!-- Collapsible for duration picker ↑  -->
                     
                     <div class="row justify-content-center">
-                    <button type="submit" id="customExport" name="customExport" class="btn btn-success my-3">Save to Excel File</button>
+                    <button type="submit" id="customExportButton" name="customExportButton" class="btn btn-success my-3">Save to Excel File</button>
                     </div>
                                                                                                                          
                 </form>
@@ -1213,6 +1216,15 @@ if(getInternetExplorerVersion()!==-1){
     document.getElementById('dateFinished').valueAsDate = new Date();
 }
     
+//toggling "Save to Excel File" button off if both "Written" and "Verbal" checkboxes are empty
+    
+    $("#inlineCheckbox1, #inlineCheckbox2").change(function(){
+        if($("#inlineCheckbox1").prop('checked') == false && $("#inlineCheckbox2").prop('checked') == false){
+            $("#customExportButton").toggle();
+        } else {
+            $("#customExportButton").show();
+        }
+    });    
     
 });
     </script>
