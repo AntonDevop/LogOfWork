@@ -254,15 +254,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="row justify-content-center">
         <?php
         //checking if $messageError contains a word "email"
-        $wrongEmail = strpos($messageError,"email");            
+        $wrongEmail = strpos($messageError,"email does not exist");            
         if ($messageError != '') {
             $output = '
             <div class="alert alert-danger text-center" role="alert">'.$messageError.' 
             ';
-            if($wrongEmail){
-                $output += '<p><button class="btn btn-primary my-3" data-toggle="modal" data-target="#passwordResetModal">Forgot password?</button></p></div>';
+            if(!$wrongEmail){
+                $output .= '<p><button class="btn btn-primary my-3" data-toggle="modal" data-target="#passwordResetModal">Forgot password?</button></p></div>';
             } else {
-                $output +='</div>';
+                $output .='</div>';
             }
             echo $output;
         }
